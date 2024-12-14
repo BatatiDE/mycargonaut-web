@@ -59,6 +59,9 @@ const Navbar = () => {
                     {/* Authentication Links */}
                     {user ? (
                         <>
+                            <Link href="/profile" className="px-3 py-2 rounded hover:bg-blue-700">
+                                Profile
+                            </Link>
                             <span className="px-3 py-2 rounded">
                                 Welcome, {user.name || user.email}
                             </span>

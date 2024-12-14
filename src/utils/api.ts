@@ -82,20 +82,37 @@ export const trackingApi = {
 // Profile APIs
 export const profileApi = {
     fetchProfile: async () =>
-        apiFetch('/profile', {
-            method: 'GET',
+        fetch(`${API_URL}/users/me`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+        }).then((response) => {
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status}`);
+            }
+            return response.json();
         }),
-    updateProfile: async (data: {
-        firstName: string;
-        lastName: string;
-        phone: string;
-        vehicleDetails: { type: string; size: string };
-    }) =>
-        apiFetch('/profile', {
-            method: 'PUT',
-            body: JSON.stringify(data),
-        }),
+
+    updateProfile: async (data: { name?: string; phone?: string }) => {
+        const response = await fetch(`${API_URL}/users/me`, {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data), // Properly serialize to JSON
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+
+        return response.json();
+    },
+
 };
+
 
 // Communication APIs
 export const messagesApi = {

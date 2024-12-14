@@ -2,16 +2,19 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/utils/AuthContext"; // Import the AuthContext hook
 
 export default function LandingPage() {
     const [from, setFrom] = useState("");
     const [to, setTo] = useState("");
     const [date, setDate] = useState("");
     const router = useRouter();
+    const { user } = useAuth(); // Get the `user` from the AuthContext
 
     const handleSearch = () => {
         router.push(`/search?from=${from}&to=${to}&date=${date}`);
     };
+
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
@@ -20,15 +23,12 @@ export default function LandingPage() {
                     Welcome to MyCargonaut
                 </h1>
                 <p className="text-gray-600">
-                    Find or offer rides and freight-sharing solutions quickly and
-                    effortlessly.
+                    Find or offer rides and freight-sharing solutions quickly and effortlessly.
                 </p>
             </header>
 
             <div className="bg-white p-6 shadow-md rounded-lg w-full max-w-lg">
-                <h2 className="text-2xl font-semibold mb-4 text-gray-700">
-                    Quick Search
-                </h2>
+                <h2 className="text-2xl font-semibold mb-4 text-gray-700">Quick Search</h2>
                 <form
                     className="space-y-4"
                     onSubmit={(e) => {
@@ -37,9 +37,7 @@ export default function LandingPage() {
                     }}
                 >
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                            From
-                        </label>
+                        <label className="block text-sm font-medium text-gray-700">From</label>
                         <input
                             type="text"
                             value={from}
@@ -51,9 +49,7 @@ export default function LandingPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                            To
-                        </label>
+                        <label className="block text-sm font-medium text-gray-700">To</label>
                         <input
                             type="text"
                             value={to}
@@ -65,9 +61,7 @@ export default function LandingPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                            Date
-                        </label>
+                        <label className="block text-sm font-medium text-gray-700">Date</label>
                         <input
                             type="date"
                             value={date}
@@ -88,12 +82,19 @@ export default function LandingPage() {
 
             <footer className="mt-10 text-gray-500">
                 <button
-                    onClick={() => router.push("/register")}
+                    onClick={() => {
+                        if (user) {
+                            router.push("/profile");
+                        } else {
+                            router.push("/register");
+                        }
+                    }}
                     className="text-blue-500 hover:underline"
                 >
-                    Get Started
+                    {user ? "Go to Profile" : "Get Started"}
                 </button>
             </footer>
+
         </div>
     );
 }
