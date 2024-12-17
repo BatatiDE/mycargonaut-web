@@ -37,6 +37,7 @@ export const tripApi = {
                     date
                     time
                     availableSpace
+                    driverId  
                 }
             }
         `;

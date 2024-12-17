@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 
 interface Trip {
     id: string;
+    driverId: string; // Ensure driverId is included
     startPoint: string;
     destinationPoint: string;
     date: string;
@@ -38,15 +39,19 @@ const DashboardPage = () => {
         const fetchData = async () => {
             try {
                 const fetchedTrips = await tripApi.getTrips();
-                const tripsWithProgress = fetchedTrips.map((trip) => ({
-                    ...trip,
-                    progress:
-                        trip.status === "ONGOING"
-                            ? Math.floor(Math.random() * 100)
-                            : 0,
-                }));
 
-                setTrips(tripsWithProgress);
+                // Filter trips where driverId matches the logged-in user's ID
+                const userTrips = fetchedTrips
+                    .filter((trip) => String(trip.driverId) === String(user?.id))
+                    .map((trip) => ({
+                        ...trip,
+                        progress:
+                            trip.status === "ONGOING"
+                                ? Math.floor(Math.random() * 100)
+                                : 0,
+                    }));
+
+                setTrips(userTrips);
 
                 // Mock destination data
                 setDestinations([
@@ -62,8 +67,10 @@ const DashboardPage = () => {
             }
         };
 
-        fetchData();
-    }, []);
+        if (user?.id) {
+            fetchData();
+        }
+    }, [user?.id]);
 
     if (loading) return <div className="text-center">Loading dashboard...</div>;
     if (error) return <div className="text-red-500 text-center">{error}</div>;
