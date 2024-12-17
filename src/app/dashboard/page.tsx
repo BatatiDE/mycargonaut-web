@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { tripApi } from "@/utils/tripApi";
 import { useAuth } from "@/utils/AuthContext";
+import { useRouter } from "next/navigation";
+
 
 interface Trip {
     id: string;
@@ -24,7 +26,7 @@ interface Destination {
 const DashboardPage = () => {
     const { user } = useAuth();
     console.log(user);
-
+    const router = useRouter();
     const [trips, setTrips] = useState<Trip[]>([]);
     const [destinations, setDestinations] = useState<Destination[]>([]);
     const [tripFilter, setTripFilter] = useState("");
@@ -124,11 +126,12 @@ const DashboardPage = () => {
             <div className="bg-white p-4 rounded shadow flex flex-col">
                 <h2 className="text-xl font-bold mb-4">Manage Trips</h2>
                 <button
-                    onClick={() => alert("Add Trip functionality not implemented yet.")}
+                    onClick={() => router.push("/trips/add")}
                     className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4"
                 >
                     Add Trip
                 </button>
+
                 <input
                     type="text"
                     placeholder="Filter Trips"

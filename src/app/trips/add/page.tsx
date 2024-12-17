@@ -3,11 +3,16 @@
 import { useState } from "react";
 import { tripApi } from "@/utils/tripApi";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/utils/AuthContext"; // Import the useAuth hook
+
+
 
 export default function AddTripPage() {
     const router = useRouter();
+
+    const { user } = useAuth(); // Get the logged-in user from context
     const [form, setForm] = useState({
-        driverId: 1, // Replace with the logged-in driver's ID
+        driverId: user?.id ? Number(user.id) : null, // Convert driverId to number
         startPoint: "",
         destinationPoint: "",
         date: "",
@@ -23,10 +28,20 @@ export default function AddTripPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!form.driverId) {
+            setError("Driver ID not available. Please log in.");
+            return;
+        }
         try {
-            await tripApi.addTrip(form);
-            router.push("/trips/bookings"); // Redirect to View Trips page
-        } catch (err) {
+            // Convert driverId to ensure type consistency
+            const payload = {
+                ...form,
+                driverId: Number(form.driverId),
+            };
+
+            await tripApi.addTrip(payload);
+            router.push("/dashboard"); // Redirect to View Trips page
+        } catch {
             setError("Failed to add trip. Please try again.");
         }
     };
