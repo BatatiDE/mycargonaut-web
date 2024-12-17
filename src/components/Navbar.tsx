@@ -2,22 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/utils/AuthContext"; // Import AuthContext
 import { useState } from "react";
-import { useAuth } from "@/utils/AuthContext";
 
 const Navbar = () => {
+    const { user, logout } = useAuth(); // Access the authenticated user and logout
     const pathname = usePathname();
-    const { user, logout } = useAuth(); // Get authentication state and logout method
     const [isMenuOpen, setMenuOpen] = useState(false);
 
     const navItems = [
         { name: "Home", path: "/" },
-        { name: "Search", path: "/search" },
-        { name: "Offer", path: "/offer" },
-        { name: "Messages", path: "/messages" },
+        { name: "Trips", path: "/trips" },
         { name: "Tracking", path: "/tracking" },
-        { name: "Reviews", path: "/reviews" },
-        { name: "Payments", path: "/payments" },
+        { name: "Profile", path: "/profile" },
     ];
 
     return (
@@ -28,7 +25,7 @@ const Navbar = () => {
                     MyCargonaut
                 </Link>
 
-                {/* Toggle Menu Button for Mobile */}
+                {/* Toggle Menu for Mobile */}
                 <button
                     className="block md:hidden text-xl"
                     onClick={() => setMenuOpen(!isMenuOpen)}
@@ -56,13 +53,24 @@ const Navbar = () => {
                         </Link>
                     ))}
 
+                    {/* Dashboard Button - Conditional Rendering */}
+                    {user && (
+                        <Link
+                            href="/dashboard"
+                            className={`px-3 py-2 rounded ${
+                                pathname === "/dashboard"
+                                    ? "bg-white text-blue-600 font-bold"
+                                    : "hover:bg-blue-700"
+                            }`}
+                        >
+                            Dashboard
+                        </Link>
+                    )}
+
                     {/* Authentication Links */}
                     {user ? (
                         <>
-                            <Link href="/profile" className="px-3 py-2 rounded hover:bg-blue-700">
-                                Profile
-                            </Link>
-                            <span className="px-3 py-2 rounded">
+                            <span className="px-3 py-2">
                                 Welcome, {user.name || user.email}
                             </span>
                             <button
@@ -94,6 +102,7 @@ const Navbar = () => {
                             >
                                 Register
                             </Link>
+
                         </>
                     )}
                 </div>

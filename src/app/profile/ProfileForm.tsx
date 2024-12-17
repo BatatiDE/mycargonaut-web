@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { profileApi } from "@/utils/api"; // API functions
 import { getErrorMessage } from "@/utils/errorHandler";
+import {useAuth} from "@/utils/AuthContext";
 
 export default function ProfileForm() {
     const [name, setName] = useState<string>("");
@@ -31,18 +32,21 @@ export default function ProfileForm() {
 
         fetchUserProfile();
     }, []);
+    const { refreshUser } = useAuth();
 
     const handleSaveChanges = async (e: React.FormEvent) => {
         e.preventDefault();
+        setError(null);
+        setSuccessMessage(null);
+
         try {
-            setError(null); // Clear previous errors
-            setSuccessMessage(null); // Clear previous success messages
-            await profileApi.updateProfile({ name, phone }); // Send partial updates
+            await profileApi.updateProfile({ name, phone });
             setSuccessMessage("Profile updated successfully.");
+
+            // Refresh user data in AuthContext
+            await refreshUser();
         } catch (err) {
-            const errorMessage = getErrorMessage(err);
-            console.error("Error saving profile:", errorMessage);
-            setError(errorMessage);
+            setError(getErrorMessage(err));
         }
     };
 

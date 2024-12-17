@@ -2,9 +2,12 @@ const API_URL = 'http://localhost:8080/api'; // Replace with your backend URL
 
 // Generic Fetch Helper
 async function apiFetch(endpoint: string, options: RequestInit = {}) {
+    const token = localStorage.getItem("authToken"); // Fetch token dynamically
+
     const response = await fetch(`${API_URL}${endpoint}`, {
         headers: {
             'Content-Type': 'application/json',
+            ...(token && { Authorization: `Bearer ${token}` }),
         },
         ...options,
     });
@@ -22,6 +25,7 @@ async function apiFetch(endpoint: string, options: RequestInit = {}) {
         throw new Error('Unsupported response type');
     }
 }
+
 
 // Authentication APIs
 export const authApi = {

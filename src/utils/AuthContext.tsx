@@ -7,11 +7,12 @@ import {
     useEffect,
     ReactNode,
 } from "react";
-
+import { authApi, profileApi } from "@/utils/api"; // Use the existing authApi
 interface User {
     id: string;
     email: string;
     name?: string;
+    role?: string;
 }
 
 interface AuthContextType {
@@ -20,17 +21,11 @@ interface AuthContextType {
     setToken: (token: string | null) => void;
     setUser: (user: User | null) => void;
     login: (email: string, password: string) => Promise<void>;
-    logout: () => void; // Add logout method
+    logout: () => void;
+    refreshUser: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType>({
-    token: null,
-    user: null,
-    setToken: () => {},
-    setUser: () => {},
-    login: async () => {},
-    logout: () => {}, // Default empty logout implementation
-});
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
@@ -44,50 +39,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [token, setToken] = useState<string | null>(null);
     const [user, setUser] = useState<User | null>(null);
 
+    // Load token and user from localStorage on app start
     useEffect(() => {
         const storedToken = localStorage.getItem("authToken");
         const storedUser = localStorage.getItem("authUser");
 
-        if (storedToken) {
-            setToken(storedToken);
-        }
-
-        if (storedUser && storedUser !== "undefined") {
-            try {
-                setUser(JSON.parse(storedUser) as User);
-            } catch (error) {
-                console.error("Error parsing stored user data:", error);
-                setUser(null);
-            }
-        } else {
-            setUser(null);
-        }
+        if (storedToken) setToken(storedToken);
+        if (storedUser) setUser(JSON.parse(storedUser));
     }, []);
 
+    // Login function
     const login = async (email: string, password: string) => {
-        try {
-            const response = await fetch("http://localhost:8080/api/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-            });
+        const { token, user } = await authApi.login({ email, password }); // Use authApi.login
+        setToken(token);
+        setUser(user);
 
-            if (!response.ok) {
-                throw new Error(`Login failed: ${response.status}`);
-            }
-
-            const { token, user } = await response.json();
-            setToken(token);
-            setUser(user);
-
-            localStorage.setItem("authToken", token);
-            localStorage.setItem("authUser", JSON.stringify(user));
-        } catch (error) {
-            console.error("Login error:", error);
-            throw error;
-        }
+        localStorage.setItem("authToken", token);
+        localStorage.setItem("authUser", JSON.stringify(user));
     };
 
+    // Logout function
     const logout = () => {
         setToken(null);
         setUser(null);
@@ -95,8 +66,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         localStorage.removeItem("authUser");
     };
 
+    // Refresh user profile
+    const refreshUser = async () => {
+        try {
+            const updatedUser = await profileApi.fetchProfile();
+            setUser(updatedUser);
+            localStorage.setItem("authUser", JSON.stringify(updatedUser));
+        } catch (error) {
+            console.error("Failed to refresh user data:", error);
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ token, user, setToken, setUser, login, logout }}>
+        <AuthContext.Provider
+            value={{
+                token,
+                user,
+                setToken,
+                setUser,
+                login,
+                logout,
+                refreshUser, // Include refreshUser function here
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );
