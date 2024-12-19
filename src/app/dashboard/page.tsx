@@ -14,6 +14,7 @@ interface Trip {
     date: string;
     time: string;
     availableSpace: number;
+    total_capacity: number; // Add this property for total capacity
     status: "SCHEDULED" | "ONGOING" | "COMPLETED" | "CANCELED";
     progress?: number;
 }
@@ -45,6 +46,9 @@ const DashboardPage = () => {
                     .filter((trip) => String(trip.driverId) === String(user?.id))
                     .map((trip) => ({
                         ...trip,
+                        bookedCount:
+                            trip.total_capacity,
+
                         progress:
                             trip.status === "ONGOING"
                                 ? Math.floor(Math.random() * 100)
@@ -182,7 +186,7 @@ const DashboardPage = () => {
                                                 className="relative cursor-pointer text-blue-500"
                                                 title="Booked Trips"
                                             >
-                                                🔵 0
+                                                🔵 {trip.total_capacity - trip.availableSpace} {/* Updated booked count */}
                                             </div>
                                             <div
                                                 className="relative cursor-pointer text-orange-500"
