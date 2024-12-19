@@ -1,43 +1,48 @@
 "use client";
 
-import React from "react";
-
 interface Trip {
+    id: string;
     startPoint: string;
     destinationPoint: string;
     date: string;
     time: string;
     availableSpace: number;
-    booked?: number;
-    confirmed?: number;
-    progress?: number; // Progress percentage
+    status: "SCHEDULED" | "ONGOING" | "COMPLETED" | "CANCELED";
+    progress?: number;
 }
 
 const TripCard = ({ trip }: { trip: Trip }) => {
     return (
-        <div className="border p-4 shadow rounded relative bg-white">
-            <h2 className="font-bold text-lg mb-2">
+        <div className="border p-4 shadow rounded bg-white">
+            <h2 className="text-lg font-semibold">
                 {trip.startPoint} → {trip.destinationPoint}
             </h2>
-            <p>Date: {trip.date} | Time: {trip.time}</p>
+            <p>
+                <strong>Date:</strong> {trip.date} | <strong>Time:</strong> {trip.time}
+            </p>
+            <p className="text-sm">
+                <strong>Status:</strong>{" "}
+                <span
+                    className={
+                        trip.status === "ONGOING"
+                            ? "text-blue-500"
+                            : trip.status === "COMPLETED"
+                                ? "text-green-500"
+                                : trip.status === "CANCELED"
+                                    ? "text-red-500"
+                                    : "text-gray-500"
+                    }
+                >
+                    {trip.status}
+                </span>
+            </p>
+            <p className={trip.availableSpace > 0 ? "text-green-500" : "text-red-500"}>
+                🟢 {trip.availableSpace} spaces left
+            </p>
 
-            {/* Status Icons */}
-            <div className="flex gap-4 mt-2">
-                <div className="text-green-500" title="Available Spaces">
-                    🟢 {trip.availableSpace}
-                </div>
-                <div className="text-blue-500" title="Booked">
-                    🔵 {trip.booked || 0}
-                </div>
-                <div className="text-orange-500" title="Confirmed">
-                    🟠 {trip.confirmed || 0}
-                </div>
-            </div>
-
-            {/* Progress Bar */}
-            {trip.progress !== undefined && (
-                <div className="mt-4">
-                    <p className="text-sm text-gray-600">Trip Progress</p>
+            {trip.status === "ONGOING" && trip.progress !== undefined && (
+                <div className="mt-2">
+                    <p className="text-xs text-gray-500">Progress</p>
                     <div className="w-full bg-gray-200 rounded h-2">
                         <div
                             className="bg-blue-500 h-2 rounded"

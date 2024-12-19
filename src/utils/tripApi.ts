@@ -90,5 +90,54 @@ export const tripApi = {
     `;
         return await graphQLFetch(query);
     },
+    // Bookings
+    bookTrip: async (tripId: string) => {
+        const mutation = `
+        mutation {
+            bookTrip(tripId: "${tripId}") {
+                success
+                message
+                booking {
+                    id
+                    status
+                }
+            }
+        }
+    `;
+
+        const data = await graphQLFetch(mutation);
+        return data.bookTrip;
+    },
+
+
+    // Confirmation
+    confirmBooking: async (bookingId: string) => {
+        const query = `
+        mutation ConfirmBooking($bookingId: ID!) {
+            confirmBooking(bookingId: $bookingId) {
+                success
+                message
+            }
+        }
+    `;
+        const variables = { bookingId };
+        const data = await graphQLFetch(query, variables);
+        return data.confirmBooking;
+    },
+
+    cancelBooking: async (bookingId: string) => {
+        const query = `
+        mutation CancelBooking($bookingId: ID!) {
+            cancelBooking(bookingId: $bookingId) {
+                success
+                message
+            }
+        }
+    `;
+        const variables = { bookingId };
+        const data = await graphQLFetch(query, variables);
+        return data.cancelBooking;
+    },
+
 
 };

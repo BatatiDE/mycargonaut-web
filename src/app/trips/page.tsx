@@ -53,6 +53,39 @@ const TripsPage = () => {
         fetchTrips();
     }, []);
 
+    // Handle trip booking
+    const handleBooking = async (tripId: string | null) => {
+        if (!tripId) {
+            alert("Invalid trip ID.");
+            return;
+        }
+
+        try {
+            console.log("Booking trip with ID:", tripId); // Debugging log
+            const response = await tripApi.bookTrip(tripId);
+            if (response.success) {
+                alert("Trip booked successfully!");
+                // Refresh trips after booking
+                setTrips((prevTrips) =>
+                    prevTrips.map((trip) =>
+                        trip.id === tripId
+                            ? {
+                                ...trip,
+                                availableSpace: trip.availableSpace - 1,
+                            }
+                            : trip
+                    )
+                );
+            } else {
+                alert(response.message);
+            }
+        } catch (error) {
+            console.error("Error booking trip:", error);
+            alert("Failed to book the trip. Please try again later.");
+        }
+    };
+
+
     if (loading) return <div className="text-center">Loading trips...</div>;
     if (error) return <div className="text-red-500 text-center">{error}</div>;
 
@@ -60,46 +93,30 @@ const TripsPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
             {/* Left Column: Destinations */}
             <div className="bg-white p-4 rounded shadow flex flex-col">
-                <h2 className="text-xl font-bold mb-4">Destinations</h2>
-                {/* Filter Input */}
+                <h2 className="text-xl font-bold mb-4">Deliveries</h2>
                 <input
                     type="text"
-                    placeholder="Filter Destinations"
+                    placeholder="Filter Deliveries"
                     className="w-full px-2 py-1 mb-4 border rounded"
-                    value={destinationFilter}
                     onChange={(e) => setDestinationFilter(e.target.value)}
                 />
-                {/* Scrollable Destination List */}
                 <div className="overflow-y-auto flex-grow" style={{ maxHeight: "400px" }}>
-                    {destinations.length === 0 ? (
-                        <p className="text-gray-500 text-center">No destinations available.</p>
-                    ) : (
-                        <ul className="space-y-4">
-                            {destinations
-                                .filter((dest) =>
-                                    dest
-                                        .toLowerCase()
-                                        .includes(destinationFilter.toLowerCase())
-                                )
-                                .map((dest, index) => (
-                                    <li
-                                        key={index}
-                                        className="border p-2 rounded shadow flex items-center justify-between"
-                                    >
-                                        <span className="font-semibold">{dest}</span>
-                                        <span
-                                            className="bg-blue-500 text-white px-2 py-1 text-xs rounded"
-                                            title="Destination"
-                                        >
-                                {index + 1}
-                            </span>
-                                    </li>
-                                ))}
-                        </ul>
+                    <ul>
+                        {destinations
+                            .filter((dest) =>
+                                dest.toLowerCase().includes(destinationFilter.toLowerCase())
+                            )
+                            .map((dest, index) => (
+                                <li key={index} className="mb-2 border-b pb-2">
+                                    {dest}
+                                </li>
+                            ))}
+                    </ul>
+                    {destinations.length === 0 && (
+                        <p className="text-gray-500">No destinations available.</p>
                     )}
                 </div>
             </div>
-
 
             {/* Right Column: Trips */}
             <div className="bg-white p-4 rounded shadow flex flex-col">
@@ -177,6 +194,15 @@ const TripsPage = () => {
                                                     ></div>
                                                 </div>
                                             </div>
+                                        )}
+                                        {/* Book Trip Button */}
+                                        {trip.availableSpace > 0 && (
+                                            <button
+                                                className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                                onClick={() => handleBooking(trip.id)}
+                                            >
+                                                Book Trip
+                                            </button>
                                         )}
                                     </li>
                                 ))}
