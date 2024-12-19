@@ -184,13 +184,13 @@ const DashboardPage = () => {
                                             </div>
                                             <div
                                                 className="relative cursor-pointer text-blue-500"
-                                                title="Booked Trips"
+                                                title="Booked Spaces"
                                             >
                                                 🔵 {trip.total_capacity - trip.availableSpace} {/* Updated booked count */}
                                             </div>
                                             <div
                                                 className="relative cursor-pointer text-orange-500"
-                                                title="Confirmed Trips"
+                                                title="Confirmed Bookings"
                                             >
                                                 🟠 0
                                             </div>
