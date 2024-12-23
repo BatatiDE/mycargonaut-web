@@ -40,6 +40,12 @@ export const tripApi = {
                     total_capacity
                     driverId  
                     status
+                    bookedUsers {
+                      id
+                      userId
+                      status
+                      createdAt
+                }
 
                 }
             }
@@ -115,18 +121,22 @@ export const tripApi = {
 
     // Confirmation
     confirmBooking: async (bookingId: string) => {
-        const query = `
-        mutation ConfirmBooking($bookingId: ID!) {
-            confirmBooking(bookingId: $bookingId) {
+        const mutation = `
+        mutation {
+            confirmBooking(bookingId: "${bookingId}") {
                 success
                 message
+                booking {
+                    id
+                    status
+                }
             }
         }
     `;
-        const variables = { bookingId };
-        const data = await graphQLFetch(query, variables);
+        const data = await graphQLFetch(mutation);
         return data.confirmBooking;
     },
+
 
     cancelBooking: async (bookingId: string) => {
         const query = `

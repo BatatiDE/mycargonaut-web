@@ -5,7 +5,12 @@ import { tripApi } from "@/utils/tripApi";
 import { useAuth } from "@/utils/AuthContext";
 import { useRouter } from "next/navigation";
 
-
+interface Booking {
+    id: string;
+    userId: string;
+    status: string;
+    createdAt: string;
+}
 interface Trip {
     id: string;
     driverId: string; // Ensure driverId is included
@@ -17,6 +22,8 @@ interface Trip {
     total_capacity: number; // Add this property for total capacity
     status: "SCHEDULED" | "ONGOING" | "COMPLETED" | "CANCELED";
     progress?: number;
+    bookedUsers: Booking[]; // Include the list of bookings
+
 }
 
 interface Destination {
@@ -35,46 +42,61 @@ const DashboardPage = () => {
     const [destinationFilter, setDestinationFilter] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const handleConfirmBooking = async (bookingId: string) => {
+        try {
+            const response = await tripApi.confirmBooking(bookingId);
+            if (response.success) {
+                alert("Booking confirmed successfully!");
+                // Optionally, refetch trips to update the UI
+                fetchData();
+            } else {
+                alert("Failed to confirm booking: " + response.message);
+            }
+        } catch (err) {
+            console.error("Error confirming booking:", err);
+            alert("An error occurred while confirming the booking.");
+        }
+    };
+    const fetchData = async () => {
+        try {
+            const fetchedTrips = await tripApi.getTrips();
+
+            // Filter trips where driverId matches the logged-in user's ID
+            const userTrips = fetchedTrips
+                .filter((trip) => String(trip.driverId) === String(user?.id))
+                .map((trip) => ({
+                    ...trip,
+                    bookedCount:
+                    trip.total_capacity,
+
+                    progress:
+                        trip.status === "ONGOING"
+                            ? Math.floor(Math.random() * 100)
+                            : 0,
+                }));
+
+            setTrips(userTrips);
+
+            // Mock destination data
+            setDestinations([
+                { id: "1", location: "Hamburg", status: "SCHEDULED" },
+                { id: "2", location: "Berlin", status: "Booked" },
+                { id: "3", location: "Munich", status: "Confirmed" },
+            ]);
+        } catch (err) {
+            console.error("Error fetching data:", err);
+            setError("Failed to load data. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const fetchedTrips = await tripApi.getTrips();
-
-                // Filter trips where driverId matches the logged-in user's ID
-                const userTrips = fetchedTrips
-                    .filter((trip) => String(trip.driverId) === String(user?.id))
-                    .map((trip) => ({
-                        ...trip,
-                        bookedCount:
-                            trip.total_capacity,
-
-                        progress:
-                            trip.status === "ONGOING"
-                                ? Math.floor(Math.random() * 100)
-                                : 0,
-                    }));
-
-                setTrips(userTrips);
-
-                // Mock destination data
-                setDestinations([
-                    { id: "1", location: "Hamburg", status: "SCHEDULED" },
-                    { id: "2", location: "Berlin", status: "Booked" },
-                    { id: "3", location: "Munich", status: "Confirmed" },
-                ]);
-            } catch (err) {
-                console.error("Error fetching data:", err);
-                setError("Failed to load data. Please try again.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
         if (user?.id) {
             fetchData();
         }
     }, [user?.id]);
+
 
     if (loading) return <div className="text-center">Loading dashboard...</div>;
     if (error) return <div className="text-red-500 text-center">{error}</div>;
@@ -186,14 +208,32 @@ const DashboardPage = () => {
                                                 className="relative cursor-pointer text-blue-500"
                                                 title="Booked Spaces"
                                             >
-                                                🔵 {trip.total_capacity - trip.availableSpace} {/* Updated booked count */}
-                                            </div>
+                                                🔵 {trip.bookedUsers.filter((booking) => booking.status === "Booked").length}                                            </div>
                                             <div
                                                 className="relative cursor-pointer text-orange-500"
                                                 title="Confirmed Bookings"
                                             >
-                                                🟠 0
+                                                🟠 {trip.bookedUsers.filter((booking) => booking.status === "Confirmed").length}
                                             </div>
+                                        </div>
+                                        {/* List of Bookings */}
+                                        <div className="mt-4">
+                                            <h4 className="font-bold">Bookings:</h4>
+                                            <ul className="space-y-2">
+                                                {trip.bookedUsers?.map((booking) => (
+                                                    <li key={booking.id} className="flex justify-between items-center">
+                                                        <p>User ID: {booking.userId}</p><span>Status: {booking.status}</span>
+                                                        {booking.status === "Booked" && (
+                                                            <button
+                                                                className="bg-blue-500 text-white px-2 py-1 rounded"
+                                                                onClick={() => handleConfirmBooking(booking.id)}
+                                                            >
+                                                                Confirm
+                                                            </button>
+                                                        )}
+                                                    </li>
+                                                ))}
+                                            </ul>
                                         </div>
 
                                         {/* Progress Bar */}
