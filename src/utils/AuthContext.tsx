@@ -7,7 +7,8 @@ import {
     useEffect,
     ReactNode,
 } from "react";
-import { authApi, profileApi } from "@/utils/api"; // Use the existing authApi
+import { authApi, profileApi } from "@/utils/api";
+import {useRouter} from "next/navigation"; // Use the existing authApi
 interface User {
     id: string;
     email: string;
@@ -38,6 +39,8 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [token, setToken] = useState<string | null>(null);
     const [user, setUser] = useState<User | null>(null);
+    const router = useRouter(); // Initialize the router
+
 
     // Load token and user from localStorage on app start
     useEffect(() => {
@@ -64,6 +67,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(null);
         localStorage.removeItem("authToken");
         localStorage.removeItem("authUser");
+        router.push('/login'); // Redirect to the login page
+
     };
 
     // Refresh user profile
@@ -86,7 +91,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 setUser,
                 login,
                 logout,
-                refreshUser, // Include refreshUser function here
+                refreshUser,
             }}
         >
             {children}
