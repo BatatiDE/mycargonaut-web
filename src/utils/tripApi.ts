@@ -150,6 +150,18 @@ export const tripApi = {
         const data = await graphQLFetch(mutation);
         return data.startOngoing;
     },
+    completeTrip: async (tripId: string) => {
+        const mutation = `
+        mutation {
+            completeTrip(tripId: "${tripId}") {
+                id
+                status
+            }
+        }
+    `;
+        const data = await graphQLFetch(mutation);
+        return data.completeTrip;
+    },
 
     cancelBooking: async (bookingId: string) => {
         const query = `

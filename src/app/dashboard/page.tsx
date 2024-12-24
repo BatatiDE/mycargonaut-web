@@ -19,7 +19,7 @@ interface Trip {
     date: string;
     time: string;
     availableSpace: number;
-    total_capacity: number; // Add this property for total capacity
+    total_capacity: number;
     status: "SCHEDULED" | "ONGOING" | "COMPLETED" | "CANCELED";
     progress?: number;
     bookedUsers: Booking[]; // Include the list of bookings
@@ -65,11 +65,59 @@ const DashboardPage = () => {
         try {
             const updatedTrip = await tripApi.startOngoingTrip(tripId);
             alert(`Trip ${updatedTrip.id} status updated to ${updatedTrip.status}.`);
+
+            // Simulate progress bar and status update
+            let progress = 0;
+            const progressInterval = setInterval(async () => {
+                setTrips((prevTrips) =>
+                    prevTrips.map((trip) =>
+                        trip.id === tripId
+                            ? {
+                                ...trip,
+                                progress: progress,
+                            }
+                            : trip
+                    )
+                );
+
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+
+                    const completedTrip = await tripApi.completeTrip(tripId);
+
+                    // Update status to COMPLETED
+                    setTrips((prevTrips) =>
+                        prevTrips.map((trip) =>
+                            trip.id === tripId
+                                ? {
+                                    ...trip,
+                                    status: completedTrip.status,
+                                    progress: undefined, // Hide progress bar
+                                }
+                                : trip
+                        )
+                    );
+
+                    alert(`Trip ${tripId} is completed. Please leave a review.`);
+                    triggerReviewModal(tripId); // Custom function to open a review modal
+                } else {
+                    progress += 10; // Increase progress
+                }
+            }, 6000); // Progress increases every 6 seconds, completing in 1 minute
+
             fetchData(); // Refresh the dashboard
         } catch (error) {
             console.error("Error starting trip:", error);
             alert("Failed to start the trip. Please try again.");
         }
+    };
+
+    const triggerReviewModal = (tripId: string) => {
+        alert(`(Not Implemented!) After Trip is Completed , Open review modal for Trip ID: ${tripId}`); // Replace this with review modal logic
+    };
+    const handleReview = (tripId: string) => {
+        alert(`(Not Implemented!) Leaving review for trip ID: ${tripId}`);
+        // Add logic to open a review modal or perform another action
     };
 
     const fetchData = async () => {
@@ -277,6 +325,15 @@ const DashboardPage = () => {
                                                 </div>
                                             </div>
                                         )}
+                                        {trip.status === "COMPLETED" && (
+                                            <button
+                                                className="mt-4 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
+                                                onClick={() => handleReview(trip.id)}
+                                            >
+                                                Leave a Review
+                                            </button>
+                                        )}
+
                                     </li>
                                 ))}
                         </ul>
