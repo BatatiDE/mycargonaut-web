@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/utils/AuthContext"; // Import the AuthContext hook
+import "leaflet/dist/leaflet.css";
 
 export default function LandingPage() {
     const [from, setFrom] = useState("");
