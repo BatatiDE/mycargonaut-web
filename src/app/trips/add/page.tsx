@@ -7,7 +7,6 @@ import { useAuth } from "@/utils/AuthContext";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
 import LocationMap from "@/components/LocationMap";
 
-
 export default function AddTripPage() {
     const router = useRouter();
     const { user } = useAuth();
@@ -18,8 +17,8 @@ export default function AddTripPage() {
         date: "",
         time: "",
         availableSpace: 0,
-        latitude: 0,
-        longitude: 0,
+        latitude: 50.586, // Default latitude (Gießen)
+        longitude: 8.678, // Default longitude (Gießen)
     });
     const [showMap, setShowMap] = useState(false);
     const [mapField, setMapField] = useState<"startPoint" | "destinationPoint" | null>(null);
@@ -33,12 +32,17 @@ export default function AddTripPage() {
         setForm({ ...form, [field]: value });
     };
 
-    const handleLocationChange = (lat: number, lng: number) => {
-        if (mapField) {
-            setForm({ ...form, latitude: lat, longitude: lng });
-            handleAutocompleteChange(mapField, `${lat}, ${lng}`); // Optional: reverse geocoding later
-        }
+
+
+    const handleLocationChange = (address: string, field: "startPoint" | "destinationPoint") => {
+        setForm((prevForm) => ({
+            ...prevForm,
+            [field]: address, // Dynamically update the correct field
+        }));
     };
+
+
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -100,11 +104,15 @@ export default function AddTripPage() {
 
                 {showMap && mapField && (
                     <LocationMap
-                        latitude={form.latitude}
-                        longitude={form.longitude}
-                        onLocationChange={handleLocationChange}
+                        onLocationChange={(address) => {
+                            if (mapField) {
+                                handleLocationChange(address, mapField);
+                            }
+                        }}
                     />
                 )}
+
+
 
                 <input
                     name="date"
