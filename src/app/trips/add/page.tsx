@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { tripApi } from "@/utils/tripApi";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/utils/AuthContext"; // Import the useAuth hook
+import { useAuth } from "@/utils/AuthContext";
+import LocationAutocomplete from "@/components/LocationAutocomplete";
+
 
 
 
@@ -24,6 +26,9 @@ export default function AddTripPage() {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setForm({ ...form, [name]: value });
+    };
+    const handleAutocompleteChange = (field: string, value: string) => {
+        setForm({ ...form, [field]: value });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -51,20 +56,17 @@ export default function AddTripPage() {
             <h1 className="text-2xl font-bold mb-4">Add a New Trip</h1>
             {error && <p className="text-red-500">{error}</p>}
             <form onSubmit={handleSubmit} className="space-y-4">
-                <input
-                    name="startPoint"
+                <LocationAutocomplete
+                    value={form.startPoint}
+                    onChange={(value) => handleAutocompleteChange("startPoint", value)}
                     placeholder="Start Point"
-                    onChange={handleChange}
-                    className="w-full border p-2 rounded"
-                    required
                 />
-                <input
-                    name="destinationPoint"
+                <LocationAutocomplete
+                    value={form.destinationPoint}
+                    onChange={(value) => handleAutocompleteChange("destinationPoint", value)}
                     placeholder="Destination"
-                    onChange={handleChange}
-                    className="w-full border p-2 rounded"
-                    required
                 />
+
                 <input
                     name="date"
                     type="date"
