@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { tripApi } from "@/utils/tripApi";
 
+import { useAuth } from "@/utils/AuthContext";
+
+
 interface Trip {
     id: string;
     startPoint: string;
@@ -12,6 +15,8 @@ interface Trip {
     availableSpace: number;
     status: "SCHEDULED" | "ONGOING" | "COMPLETED" | "CANCELED";
     progress?: number;
+    driverId: string; // Ensure driverId is defined here
+
 }
 
 const TripsPage = () => {
@@ -19,7 +24,7 @@ const TripsPage = () => {
     const [destinations, setDestinations] = useState<string[]>([]);
     const [tripFilter, setTripFilter] = useState("");
     const [destinationFilter, setDestinationFilter] = useState("");
-
+    const { user } = useAuth();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -143,6 +148,7 @@ const TripsPage = () => {
                                         key={trip.id}
                                         className="border p-4 rounded shadow"
                                     >
+
                                         <h2 className="text-lg font-semibold">
                                             {trip.startPoint} → {trip.destinationPoint}
                                         </h2>
@@ -150,6 +156,7 @@ const TripsPage = () => {
                                             <strong>Date:</strong> {trip.date} |{" "}
                                             <strong>Time:</strong> {trip.time}
                                         </p>
+
                                         {/* Available Space */}
                                         {trip.availableSpace > 0 ? (
                                             <p className="text-green-500">
@@ -196,13 +203,19 @@ const TripsPage = () => {
                                             </div>
                                         )}
                                         {/* Book Trip Button */}
-                                        {trip.availableSpace > 0 && trip.status == "SCHEDULED" && (
+                                        {trip.availableSpace > 0 && trip.status == "SCHEDULED" &&
+                                            String(user?.id) !== String(trip.driverId) && (
                                             <button
                                                 className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                                                 onClick={() => handleBooking(trip.id)}
                                             >
                                                 Book Trip
                                             </button>
+                                        )}
+                                        {String(user?.id) === String(trip.driverId) && (
+                                            <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs">
+                                               You are the driver
+                                            </span>
                                         )}
                                     </li>
                                 ))}

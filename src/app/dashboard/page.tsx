@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { tripApi } from "@/utils/tripApi";
-import { useAuth } from "@/utils/AuthContext";
-import { useRouter } from "next/navigation";
+import {useEffect, useState} from "react";
+import {tripApi} from "@/utils/tripApi";
+import {useAuth} from "@/utils/AuthContext";
+import {useRouter} from "next/navigation";
 
 interface Booking {
     id: string;
@@ -11,6 +11,7 @@ interface Booking {
     status: string;
     createdAt: string;
 }
+
 interface Trip {
     id: string;
     driverId: string; // Ensure driverId is included
@@ -33,15 +34,16 @@ interface Destination {
 }
 
 const DashboardPage = () => {
-    const { user } = useAuth();
+    const {user} = useAuth();
     console.log(user);
     const router = useRouter();
-    const [trips, setTrips] = useState<Trip[]>([]);
     const [destinations, setDestinations] = useState<Destination[]>([]);
     const [tripFilter, setTripFilter] = useState("");
     const [destinationFilter, setDestinationFilter] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [trips, setTrips] = useState<{ added: Trip[]; booked: Trip[] }>({added: [], booked: []});
+    const [currentFilter, setCurrentFilter] = useState<"added" | "booked">("added");
     const handleConfirmBooking = async (bookingId: string) => {
         try {
             const response = await tripApi.confirmBooking(bookingId);
@@ -69,8 +71,9 @@ const DashboardPage = () => {
             // Simulate progress bar and status update
             let progress = 0;
             const progressInterval = setInterval(async () => {
-                setTrips((prevTrips) =>
-                    prevTrips.map((trip) =>
+                setTrips((prevTrips) => ({
+                    ...prevTrips,
+                    [currentFilter]: prevTrips[currentFilter].map((trip) =>
                         trip.id === tripId
                             ? {
                                 ...trip,
@@ -78,7 +81,7 @@ const DashboardPage = () => {
                             }
                             : trip
                     )
-                );
+                }));
 
                 if (progress >= 100) {
                     clearInterval(progressInterval);
@@ -86,8 +89,9 @@ const DashboardPage = () => {
                     const completedTrip = await tripApi.completeTrip(tripId);
 
                     // Update status to COMPLETED
-                    setTrips((prevTrips) =>
-                        prevTrips.map((trip) =>
+                    setTrips((prevTrips) => ({
+                        ...prevTrips,
+                        [currentFilter]: prevTrips [currentFilter].map((trip) =>
                             trip.id === tripId
                                 ? {
                                     ...trip,
@@ -96,7 +100,7 @@ const DashboardPage = () => {
                                 }
                                 : trip
                         )
-                    );
+                    }));
 
                     alert(`Trip ${tripId} is completed. Please leave a review.`);
                     triggerReviewModal(tripId); // Custom function to open a review modal
@@ -125,8 +129,8 @@ const DashboardPage = () => {
             const fetchedTrips = await tripApi.getTrips();
 
             // Filter trips where driverId matches the logged-in user's ID
-            const userTrips = fetchedTrips
-                .filter((trip) => String(trip.driverId) === String(user?.id))
+            const addedTrips = fetchedTrips.filter((trip) =>
+                String(trip.driverId) === String(user?.id))
                 .map((trip) => ({
                     ...trip,
                     bookedCount:
@@ -137,14 +141,17 @@ const DashboardPage = () => {
                             ? Math.floor(Math.random() * 100)
                             : 0,
                 }));
-
-            setTrips(userTrips);
+            // Filter trips booked by the logged-in user
+            const bookedTrips = fetchedTrips.filter((trip) => trip.bookedUsers.some((booking) =>
+                String(booking.userId) === String(user?.id))
+            );
+            setTrips({added: addedTrips, booked: bookedTrips});
 
             // Mock destination data
             setDestinations([
-                { id: "1", location: "Hamburg", status: "SCHEDULED" },
-                { id: "2", location: "Berlin", status: "Booked" },
-                { id: "3", location: "Munich", status: "Confirmed" },
+                {id: "1", location: "Hamburg", status: "SCHEDULED"},
+                {id: "2", location: "Berlin", status: "Booked"},
+                {id: "3", location: "Munich", status: "Confirmed"},
             ]);
         } catch (err) {
             console.error("Error fetching data:", err);
@@ -181,7 +188,7 @@ const DashboardPage = () => {
                     className="w-full px-2 py-1 mb-4 border rounded"
                     onChange={(e) => setDestinationFilter(e.target.value)}
                 />
-                <div className="overflow-y-auto flex-grow" style={{ maxHeight: "400px" }}>
+                <div className="overflow-y-auto flex-grow" style={{maxHeight: "400px"}}>
                     {destinations.length === 0 ? (
                         <p>No destinations available.</p>
                     ) : (
@@ -220,7 +227,27 @@ const DashboardPage = () => {
 
             {/* Right Column: Trips */}
             <div className="bg-white p-4 rounded shadow flex flex-col">
+                <div className="flex justify-between items-center mb-4">
+
                 <h2 className="text-xl font-bold mb-4">Manage Trips</h2>
+                    <button
+                        onClick={() => setCurrentFilter("added")}
+                        className={`px-4 py-2 rounded ${
+                            currentFilter === "added" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
+                        }`}
+                    >
+                        My Added Trips
+                    </button>
+                    <button
+                        onClick={() => setCurrentFilter("booked")}
+                        className={`px-4 py-2 rounded ${
+                            currentFilter === "booked" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
+                        }`}
+                    >
+                        My Booked Trips
+                    </button>
+                </div>
+
                 <button
                     onClick={() => router.push("/trips/add")}
                     className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4"
@@ -234,12 +261,12 @@ const DashboardPage = () => {
                     className="w-full px-2 py-1 mb-4 border rounded"
                     onChange={(e) => setTripFilter(e.target.value)}
                 />
-                <div className="overflow-y-auto flex-grow" style={{ maxHeight: "400px" }}>
-                    {trips.length === 0 ? (
+                <div className="overflow-y-auto flex-grow" style={{maxHeight: "400px"}}>
+                    {trips[currentFilter].length === 0 ? (
                         <p>No trips available.</p>
                     ) : (
                         <ul className="space-y-4">
-                            {trips
+                            {trips[currentFilter]
                                 .filter((trip) =>
                                     trip.startPoint
                                         .toLowerCase()
@@ -280,28 +307,50 @@ const DashboardPage = () => {
                                             </div>
                                         </div>
                                         {/* List of Bookings */}
-                                        <div className="mt-4">
-                                            <h4 className="font-bold">Bookings:</h4>
-                                            <ul className="space-y-2">
-                                                {trip.bookedUsers?.map((booking) => (
-                                                    <li key={booking.id} className="flex justify-between items-center">
-                                                        <p>User ID: {booking.userId}</p><span>Bookings Status: {booking.status}</span>
-                                                        {booking.status === "Booked" && (
-                                                            <button
-                                                                className="bg-blue-500 text-white px-2 py-1 rounded"
-                                                                onClick={() => handleConfirmBooking(booking.id)}
-                                                            >
-                                                                Confirm
-                                                            </button>
-                                                        )}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
+                                        {trip.status === "SCHEDULED" && String(user?.id) === String(trip.driverId) && (
+
+                                            <div className="mt-4">
+                                                <h4 className="font-bold">Bookings:</h4>
+                                                <ul className="space-y-2">
+                                                    {trip.bookedUsers?.map((booking) => (
+                                                        <li key={booking.id}
+                                                            className="flex justify-between items-center">
+                                                            <p>User ID: {booking.userId}</p>
+                                                            <span>Bookings Status: {booking.status}</span>
+                                                            {booking.status === "Booked" && (
+                                                                <button
+                                                                    className="bg-blue-500 text-white px-2 py-1 rounded"
+                                                                    onClick={() => handleConfirmBooking(booking.id)}
+                                                                >
+                                                                    Confirm
+                                                                </button>
+                                                            )}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+                                        {/* Passenger Booking Status */}
+                                        {trip.bookedUsers.some((booking) => String(booking.userId) === String(user?.id)) && (
+                                            <span
+                                                className={`text-sm px-2 py-1 rounded ${
+                                                    trip.bookedUsers.find((booking) => String(booking.userId) === String(user?.id))?.status === "Booked"
+                                                        ? "bg-blue-200 text-blue-700"
+                                                        : trip.bookedUsers.find((booking) => String(booking.userId) === String(user?.id))?.status === "Confirmed"
+                                                            ? "bg-orange-200 text-orange-700"
+                                                            : "bg-gray-200 text-gray-700"
+                                                }`}
+                                            >
+                                                  Your booking status is:{" "}
+                                                 {trip.bookedUsers.find((booking) => String(booking.userId) === String(user?.id))?.status}.
+                                            </span>
+                                        )}
+
+
                                         <p>
                                             <strong>Trips Status:</strong> {trip.status}
                                         </p>
-                                        {trip.status === "SCHEDULED" && (
+                                        {trip.status === "SCHEDULED" && String(user?.id) === String(trip.driverId) && (
                                             <button
                                                 className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                                                 onClick={() => handleStartTrip(trip.id)}
