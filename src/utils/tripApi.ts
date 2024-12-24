@@ -138,6 +138,19 @@ export const tripApi = {
     },
 
 
+    startOngoingTrip: async (tripId: string) => {
+        const mutation = `
+            mutation {
+                startOngoing(tripId: ${tripId}) {
+                    id
+                    status
+                }
+            }
+        `;
+        const data = await graphQLFetch(mutation);
+        return data.startOngoing;
+    },
+
     cancelBooking: async (bookingId: string) => {
         const query = `
         mutation CancelBooking($bookingId: ID!) {
@@ -147,8 +160,7 @@ export const tripApi = {
             }
         }
     `;
-        const variables = { bookingId };
-        const data = await graphQLFetch(query, variables);
+        const data = await graphQLFetch(query);
         return data.cancelBooking;
     },
 

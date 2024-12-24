@@ -57,6 +57,21 @@ const DashboardPage = () => {
             alert("An error occurred while confirming the booking.");
         }
     };
+    const handleStartTrip = async (tripId: string) => {
+        if (!tripId) {
+            alert("Trip ID is required to start the trip.");
+            return;
+        }
+        try {
+            const updatedTrip = await tripApi.startOngoingTrip(tripId);
+            alert(`Trip ${updatedTrip.id} status updated to ${updatedTrip.status}.`);
+            fetchData(); // Refresh the dashboard
+        } catch (error) {
+            console.error("Error starting trip:", error);
+            alert("Failed to start the trip. Please try again.");
+        }
+    };
+
     const fetchData = async () => {
         try {
             const fetchedTrips = await tripApi.getTrips();
@@ -103,7 +118,7 @@ const DashboardPage = () => {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
-            {/* Left Column: Destinations */}
+            {/* Left Column: Deliveries */}
             <div className="bg-white p-4 rounded shadow flex flex-col">
                 <h2 className="text-xl font-bold mb-4">Manage Deliveries</h2>
                 <button
@@ -222,7 +237,7 @@ const DashboardPage = () => {
                                             <ul className="space-y-2">
                                                 {trip.bookedUsers?.map((booking) => (
                                                     <li key={booking.id} className="flex justify-between items-center">
-                                                        <p>User ID: {booking.userId}</p><span>Status: {booking.status}</span>
+                                                        <p>User ID: {booking.userId}</p><span>Bookings Status: {booking.status}</span>
                                                         {booking.status === "Booked" && (
                                                             <button
                                                                 className="bg-blue-500 text-white px-2 py-1 rounded"
@@ -235,7 +250,17 @@ const DashboardPage = () => {
                                                 ))}
                                             </ul>
                                         </div>
-
+                                        <p>
+                                            <strong>Trips Status:</strong> {trip.status}
+                                        </p>
+                                        {trip.status === "SCHEDULED" && (
+                                            <button
+                                                className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                                                onClick={() => handleStartTrip(trip.id)}
+                                            >
+                                                Start the Trip
+                                            </button>
+                                        )}
                                         {/* Progress Bar */}
                                         {trip.status === "ONGOING" && (
                                             <div className="mt-2">
