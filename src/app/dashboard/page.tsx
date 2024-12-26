@@ -144,48 +144,6 @@ const DashboardPage = () => {
         return null;
     };
 
-    const fetchPassengerRatings = async () => {
-        const ratings = {}; // Store user ratings separately
-
-        try {
-            // Iterate over trips one by one
-            for (const trip of trips.added) {
-                for (const user of trip.bookedUsers) {
-                    if (!ratings[user.userId]) { // Avoid redundant fetches for the same user
-                        try {
-                            // Fetch individual user ratings
-                            const response = await fetch("http://localhost:8080/graphql", {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                },
-                                body: JSON.stringify({
-                                    query: `
-                                    query GetAverageRatingByUser($userId: ID!) {
-                                        getAverageRatingByUser(userId: $userId)
-                                    }
-                                `,
-                                    variables: { userId: user.userId },
-                                }),
-                            });
-
-                            const result = await response.json();
-                            ratings[user.userId] = result.data?.getAverageRatingByUser || 0; // Default to 0 if no rating
-                        } catch (error) {
-                            console.error(`Error fetching rating for user ${user.userId}:`, error);
-                            ratings[user.userId] = 0; // Fallback to 0 on error
-                        }
-                    }
-                }
-            }
-
-            console.log("Fetched Ratings:", ratings); // Debugging output to confirm fetched ratings
-        } catch (error) {
-            console.error("Error fetching passenger ratings:", error);
-        }
-
-        return ratings; // Return ratings object
-    };
 
     const handleReviewSubmit = async (rating: number) => {
         try {
@@ -196,21 +154,25 @@ const DashboardPage = () => {
                 },
                 body: JSON.stringify({
                     query: `
-                        mutation AddRating($userId: ID!, $tripId: ID!, $ratingValue: Float!) {
-                            addRating(userId: $userId, tripId: $tripId, ratingValue: $ratingValue) {
-                                id
-                                user {
-                                    id
-                                }
-                                trip {
-                                    id
-                                }
-                                ratingValue
-                            }
-                        }
-                    `,
+          mutation AddRating($voterId: ID!, $userId: ID!, $tripId: ID!, $ratingValue: Float!) {
+            addRating(voterId: $voterId, userId: $userId, tripId: $tripId, ratingValue: $ratingValue) {
+              id
+              user {
+                id
+              }
+              voter {
+                id
+              }
+              trip {
+                id
+              }
+              ratingValue
+            }
+          }
+        `,
                     variables: {
-                        userId: currentTargetUserId,
+                        voterId: user?.id, // Logged-in user ID
+                        userId: currentTargetUserId, // Driver or passenger being rated
                         tripId: currentTripId,
                         ratingValue: rating,
                     },
@@ -219,7 +181,7 @@ const DashboardPage = () => {
 
             const result = await response.json();
             if (result.errors) {
-                console.error("Error submitting rating:", result.errors);
+                console.error("GraphQL Errors:", result.errors);
                 alert("Failed to submit rating. Please try again.");
             } else {
                 alert("Rating submitted successfully!");
@@ -233,12 +195,12 @@ const DashboardPage = () => {
     };
 
 
-    const handleReview = (tripId: string) => {
-        alert(`(Not Implemented!) Leaving review for trip ID: ${tripId}`);
-        // Add logic to open a review modal or perform another action
-        triggerReviewModal(tripId); // Use the updated function to open the modal
-
+    const handleReview = (tripId: string, userId: string) => {
+        setCurrentTripId(tripId);
+        setCurrentTargetUserId(userId);
+        setRatingModalOpen(true);
     };
+
 
     const fetchData = async () => {
         try {
@@ -278,15 +240,8 @@ const DashboardPage = () => {
     };
 
     useEffect(() => {
-        const fetchDataAndRatings = async () => {
-            await fetchData();
-            await fetchPassengerRatings();
-        };
         if (user?.id) {
-            fetchDataAndRatings();
-        }
-
-
+            (async () => await fetchData())();        }
     }, [user?.id]);
 
 
@@ -499,26 +454,47 @@ const DashboardPage = () => {
                                             </div>
                                         )}
                                         {trip.status === "COMPLETED" && (
-                                            <button
-                                                className="mt-4 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
-                                                onClick={() => handleReview(trip.id)}
-                                            >
-                                                Leave a Review
-                                            </button>
+                                            <div>
+                                                {String(user?.id) === String(trip.driverId) ? (
+                                                    // Driver's View
+                                                    <div className="mt-4">
+                                                        <h4 className="font-bold">Bookings:</h4>
+                                                        <ul className="space-y-2">
+                                                            {trip.bookedUsers.map((booking) => (
+                                                                <li key={booking.id} className="flex justify-between items-center">
+                                                                    <p>User ID: {booking.userId}</p>
+                                                                    <button
+                                                                        className="bg-blue-500 text-white px-2 py-1 rounded"
+                                                                        onClick={() => handleReview(trip.id, booking.userId)}
+                                                                    >
+                                                                        Rate Now
+                                                                    </button>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                ) : (
+                                                    // Passenger's View
+                                                    <button
+                                                        className="mt-4 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
+                                                        onClick={() => handleReview(trip.id, trip.driverId)}
+                                                    >
+                                                        Rate Driver
+                                                    </button>
+                                                )}
+                                            </div>
                                         )}
-
+                                        <RatingModal
+                                            isOpen={ratingModalOpen}
+                                            onClose={() => setRatingModalOpen(false)}
+                                            onSubmit={handleReviewSubmit}
+                                        />
                                     </li>
                                 ))}
                         </ul>
                     )}
                 </div>
             </div>
-            {/*  RatingModal component  */}
-            <RatingModal
-                isOpen={ratingModalOpen}
-                onClose={() => setRatingModalOpen(false)}
-                onSubmit={handleReviewSubmit}
-            />
         </div>
     );
 };

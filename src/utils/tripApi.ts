@@ -45,6 +45,7 @@ export const tripApi = {
                       userId
                       status
                       createdAt
+                      
                 }
 
                 }
