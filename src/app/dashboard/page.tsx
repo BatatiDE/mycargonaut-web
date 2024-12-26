@@ -4,6 +4,9 @@ import {useEffect, useState} from "react";
 import {tripApi} from "@/utils/tripApi";
 import {useAuth} from "@/utils/AuthContext";
 import {useRouter} from "next/navigation";
+import RatingModal from "@/components/rating/RatingModal";
+import StarRating from "@/components/rating/StarRating";
+
 
 interface Booking {
     id: string;
@@ -24,6 +27,7 @@ interface Trip {
     status: "SCHEDULED" | "ONGOING" | "COMPLETED" | "CANCELED";
     progress?: number;
     bookedUsers: Booking[]; // Include the list of bookings
+    rating?: number;
 
 }
 
@@ -44,6 +48,10 @@ const DashboardPage = () => {
     const [error, setError] = useState<string | null>(null);
     const [trips, setTrips] = useState<{ added: Trip[]; booked: Trip[] }>({added: [], booked: []});
     const [currentFilter, setCurrentFilter] = useState<"added" | "booked">("added");
+    const [currentTripId, setCurrentTripId] = useState<string | null>(null);
+    const [ratingModalOpen, setRatingModalOpen] = useState<boolean>(false);
+    const [currentTargetUserId, setCurrentTargetUserId] = useState<string | null>(null);
+
     const handleConfirmBooking = async (bookingId: string) => {
         try {
             const response = await tripApi.confirmBooking(bookingId);
@@ -117,11 +125,119 @@ const DashboardPage = () => {
     };
 
     const triggerReviewModal = (tripId: string) => {
-        alert(`(Not Implemented!) After Trip is Completed , Open review modal for Trip ID: ${tripId}`); // Replace this with review modal logic
+        setCurrentTripId(tripId);
+        const targetUserId = getTargetUserIdForRating(tripId) ?? null; // Use null if undefined
+        setCurrentTargetUserId(targetUserId);
+        setRatingModalOpen(true);
     };
+
+    const getTargetUserIdForRating = (tripId: string) => {
+        const trip = trips.added.concat(trips.booked).find((t) => t.id === tripId);
+        if (!trip) return null;
+
+        if (user?.id === trip.driverId) {
+            return trip.bookedUsers.find((booking) => booking.status === "Booked")
+                ?.userId;
+        } else if (user?.id) {
+            return trip.driverId;
+        }
+        return null;
+    };
+
+    const fetchPassengerRatings = async () => {
+        const ratings = {}; // Store user ratings separately
+
+        try {
+            // Iterate over trips one by one
+            for (const trip of trips.added) {
+                for (const user of trip.bookedUsers) {
+                    if (!ratings[user.userId]) { // Avoid redundant fetches for the same user
+                        try {
+                            // Fetch individual user ratings
+                            const response = await fetch("http://localhost:8080/graphql", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                    query: `
+                                    query GetAverageRatingByUser($userId: ID!) {
+                                        getAverageRatingByUser(userId: $userId)
+                                    }
+                                `,
+                                    variables: { userId: user.userId },
+                                }),
+                            });
+
+                            const result = await response.json();
+                            ratings[user.userId] = result.data?.getAverageRatingByUser || 0; // Default to 0 if no rating
+                        } catch (error) {
+                            console.error(`Error fetching rating for user ${user.userId}:`, error);
+                            ratings[user.userId] = 0; // Fallback to 0 on error
+                        }
+                    }
+                }
+            }
+
+            console.log("Fetched Ratings:", ratings); // Debugging output to confirm fetched ratings
+        } catch (error) {
+            console.error("Error fetching passenger ratings:", error);
+        }
+
+        return ratings; // Return ratings object
+    };
+
+    const handleReviewSubmit = async (rating: number) => {
+        try {
+            const response = await fetch("http://localhost:8080/graphql", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    query: `
+                        mutation AddRating($userId: ID!, $tripId: ID!, $ratingValue: Float!) {
+                            addRating(userId: $userId, tripId: $tripId, ratingValue: $ratingValue) {
+                                id
+                                user {
+                                    id
+                                }
+                                trip {
+                                    id
+                                }
+                                ratingValue
+                            }
+                        }
+                    `,
+                    variables: {
+                        userId: currentTargetUserId,
+                        tripId: currentTripId,
+                        ratingValue: rating,
+                    },
+                }),
+            });
+
+            const result = await response.json();
+            if (result.errors) {
+                console.error("Error submitting rating:", result.errors);
+                alert("Failed to submit rating. Please try again.");
+            } else {
+                alert("Rating submitted successfully!");
+                setRatingModalOpen(false);
+                fetchData();
+            }
+        } catch (error) {
+            console.error("Error during API call:", error);
+            alert("An error occurred while submitting your rating.");
+        }
+    };
+
+
     const handleReview = (tripId: string) => {
         alert(`(Not Implemented!) Leaving review for trip ID: ${tripId}`);
         // Add logic to open a review modal or perform another action
+        triggerReviewModal(tripId); // Use the updated function to open the modal
+
     };
 
     const fetchData = async () => {
@@ -162,9 +278,15 @@ const DashboardPage = () => {
     };
 
     useEffect(() => {
+        const fetchDataAndRatings = async () => {
+            await fetchData();
+            await fetchPassengerRatings();
+        };
         if (user?.id) {
-            fetchData();
+            fetchDataAndRatings();
         }
+
+
     }, [user?.id]);
 
 
@@ -316,6 +438,8 @@ const DashboardPage = () => {
                                                         <li key={booking.id}
                                                             className="flex justify-between items-center">
                                                             <p>User ID: {booking.userId}</p>
+                                                            <StarRating rating={trip.rating || 0} />
+
                                                             <span>Bookings Status: {booking.status}</span>
                                                             {booking.status === "Booked" && (
                                                                 <button
@@ -389,6 +513,12 @@ const DashboardPage = () => {
                     )}
                 </div>
             </div>
+            {/*  RatingModal component  */}
+            <RatingModal
+                isOpen={ratingModalOpen}
+                onClose={() => setRatingModalOpen(false)}
+                onSubmit={handleReviewSubmit}
+            />
         </div>
     );
 };

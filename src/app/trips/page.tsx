@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { tripApi } from "@/utils/tripApi";
 
 import { useAuth } from "@/utils/AuthContext";
+import StarRating from "@/components/rating/StarRating";
 
 
 interface Trip {
@@ -15,7 +16,8 @@ interface Trip {
     availableSpace: number;
     status: "SCHEDULED" | "ONGOING" | "COMPLETED" | "CANCELED";
     progress?: number;
-    driverId: string; // Ensure driverId is defined here
+    driverId: string;
+    driverRating?:number;
 
 }
 
@@ -56,7 +58,35 @@ const TripsPage = () => {
         };
 
         fetchTrips();
+        fetchDriverRatings();
     }, []);
+
+    const fetchDriverRatings = async () => {
+        const updatedTrips = await Promise.all(
+            trips.map(async (trip) => {
+                try {
+                    const response = await fetch("http://localhost:8080/graphql", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            query: `
+              query GetAverageRating($userId: ID!) {
+                getAverageRatingByUser(userId: $userId)
+              }
+            `,
+                            variables: { userId: trip.driverId },
+                        }),
+                    });
+                    const data = await response.json();
+                    return { ...trip, driverRating: data.data.getAverageRatingByUser || 0 };
+                } catch (error) {
+                    console.error("Error fetching driver rating:", error);
+                    return { ...trip, driverRating: 0 };
+                }
+            })
+        );
+        setTrips(updatedTrips);
+    };
 
     // Handle trip booking
     const handleBooking = async (tripId: string | null) => {
@@ -185,6 +215,7 @@ const TripsPage = () => {
                                                 {trip.status}
                                             </span>
                                         </p>
+                                        <StarRating rating={trip.driverRating || 0} />
 
                                         {/* Progress Bar */}
                                         {trip.status === "ONGOING" && (
