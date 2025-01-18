@@ -1,3 +1,6 @@
+/*import {Trip} from "@/utils/types";*/
+import {Trip} from "@/types/trip";
+
 const TRIP_GRAPHQL_ENDPOINT = "http://localhost:8080/graphql"; // Ensure correct backend URL
 
 // Generic GraphQL Fetch Helper for Trips
@@ -27,19 +30,20 @@ async function graphQLFetch(query: string) {
 
 // Trip API Functions
 export const tripApi = {
-    getTrips: async () => {
+    getTrips: async (): Promise<Trip[]> => {
         const query = `
             query {
                 getTrips {
                     id
-                    startPoint
+                    startingPoint
                     destinationPoint
                     date
                     time
-                    availableSpace
-                    total_capacity
+                    availableSeats
+                    freightSpace
                     driverId  
                     status
+                    type
                     bookedUsers {
                       id
                       userId
@@ -72,14 +76,14 @@ export const tripApi = {
                     destinationPoint: "${input.destinationPoint}",
                     date: "${input.date}",
                     time: "${input.time}",
-                    availableSpace: ${input.availableSpace}
+                    availableSeats: ${input.availableSpace}
                 }) {
                     id
                     startPoint
                     destinationPoint
                     date
                     time
-                    availableSpace
+                    availableSeats
                 }
             }
         `;
