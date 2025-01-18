@@ -1,5 +1,5 @@
 import type {Metadata, Viewport} from "next";
-import localFont from "next/font/local";
+import { Inter } from 'next/font/google'
 import Navbar from "@/components/Navbar"; // Import your Navbar component
 import "./globals.css";
 import { AuthProvider } from "@/utils/AuthContext"; // Import AuthProvider for authentication context
@@ -8,21 +8,13 @@ import { Suspense } from "react"; // For lazy loading
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import Footer from "@/components/Footer"; // A global loading spinner
 
-const geistSans = localFont({
-    src: "./fonts/GeistVF.woff",
-    variable: "--font-geist-sans",
-    weight: "100 900",
-});
-const geistMono = localFont({
-    src: "./fonts/GeistMonoVF.woff",
-    variable: "--font-geist-mono",
-    weight: "100 900",
-});
+const inter = Inter({ subsets: ['latin'] })
+
 
 // Metadata
 export const metadata: Metadata = {
     title: "MyCargonaut",
-    description: "A platform for ride and freight sharing",
+    description: "Ein Plattform für Mitfahrgelegenheiten und Frachttransporte"
 };
 
 // Viewport Configuration
@@ -37,7 +29,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
+        <html lang="de">
         <head>
             {/* SEO Improvements */}
             <link rel="icon" href="/favicon.ico" />
@@ -52,23 +44,25 @@ export default function RootLayout({
             />
             <title>MyCargonaut</title>
         </head>
-        <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-        <AuthProvider>
-            <ErrorBoundary>
-                {/* Loading State for Suspense Components */}
-                <Suspense fallback={<LoadingSpinner />}>
-                    {/* Navigation Bar */}
-                    <Navbar />
+        <body className={inter.className}>
+        <div className="flex flex-col min-h-screen">
+            <AuthProvider>
+                <ErrorBoundary>
+                    {/* Loading State for Suspense Components */}
+                    <Suspense fallback={<LoadingSpinner/>}>
+                        {/* Navigation Bar */}
+                        <Navbar/>
 
-                    {/* Main Content */}
-                    <main className="container mx-auto px-4">{children}</main>
-                    <Footer/>
-                </Suspense>
-            </ErrorBoundary>
-        </AuthProvider>
+                        {/* Main Content */}
+                        <main className="flex-grow px-4 sm:px-6 lg:px-8">
+                            {children}
+                        </main>
+                        <Footer/>
+                    </Suspense>
+                </ErrorBoundary>
+            </AuthProvider>
+        </div>
         </body>
         </html>
-    );
+);
 }
