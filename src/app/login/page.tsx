@@ -1,3 +1,6 @@
+/*
+//Old Version
+
 "use client";
 
 import { useState } from "react";
@@ -10,7 +13,7 @@ export default function LoginPage() {
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+    /!*const [error, setError] = useState("");*!/
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -70,3 +73,27 @@ export default function LoginPage() {
         </div>
     );
 }
+*/
+//New Version
+'use client'
+import LoginForm from '@/components/LoginForm'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
+export default function Login() {
+    return (
+        <div className="container mx-auto px-4 py-8">
+            <div className="max-w-md mx-auto">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <LoginForm />
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    )
+}
+
+
