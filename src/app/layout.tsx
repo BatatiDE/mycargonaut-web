@@ -5,7 +5,8 @@ import "./globals.css";
 import { AuthProvider } from "@/utils/AuthContext"; // Import AuthProvider for authentication context
 import ErrorBoundary from "@/components/ErrorBoundary"; // Import ErrorBoundary
 import { Suspense } from "react"; // For lazy loading
-import LoadingSpinner from "@/components/shared/LoadingSpinner"; // A global loading spinner
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import Footer from "@/components/Footer"; // A global loading spinner
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -49,6 +50,7 @@ export default function RootLayout({
                 name="viewport"
                 content="width=device-width, initial-scale=1.0"
             />
+            <title>MyCargonaut</title>
         </head>
         <body
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
@@ -61,7 +63,8 @@ export default function RootLayout({
                     <Navbar />
 
                     {/* Main Content */}
-                    <main>{children}</main>
+                    <main className="container mx-auto px-4">{children}</main>
+                    <Footer/>
                 </Suspense>
             </ErrorBoundary>
         </AuthProvider>
