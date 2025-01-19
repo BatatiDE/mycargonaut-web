@@ -8,9 +8,9 @@ export default function Home() {
     return (
         <div className="flex flex-col">
             {/* Hero */}
-            <section className="bg-orange-50 py-20">
-                <div className="container mx-auto px-4">
-                    <div className="flex flex-col lg:flex-row items-center">
+            <section className="bg-orange-50">
+                <div className="container mx-auto">
+                    <div className="flex flex-col lg:flex-row items-center py-20">
                         <div className="lg:w-1/2 mb-10 lg:mb-0">
                             <h1 className="text-3xl lg:text-5xl font-bold mb-6">Mitfahren und Versenden leicht gemacht</h1>
                             <p className="text-xl mb-8">MyCargonaut verbindet Sie für Mitfahrgelegenheiten und Frachttransporte. Sparen Sie Geld und schonen Sie die Umwelt.</p>
@@ -29,8 +29,8 @@ export default function Home() {
             </section>
 
             {/* Vorteile */}
-            <section className="py-20">
-                <div className="container mx-auto px-4">
+            <section>
+                <div className="container mx-auto py-20">
                     <h2 className="text-3xl font-bold text-center mb-12">Warum MyCargonaut wählen?</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         <VorteilKarte
@@ -58,8 +58,8 @@ export default function Home() {
             </section>
 
             {/* CTA */}
-            <section className="bg-orange-100 py-20">
-                <div className="container mx-auto px-4 text-center">
+            <section className="bg-orange-100">
+                <div className="container mx-auto py-20 text-center">
                     <h2 className="text-3xl font-bold mb-6">Bereit, Ihre Reise mit MyCargonaut zu beginnen?</h2>
                     <p className="text-xl mb-8">Schließen Sie sich Tausenden zufriedener Benutzer an, die bereits Zeit und Geld mit MyCargonaut sparen.</p>
                     <Link href="/register">
@@ -83,7 +83,4 @@ function VorteilKarte({ icon, titel, beschreibung }: { icon: React.ReactNode; ti
         </div>
     )
 }
-
-
-
 
