@@ -31,6 +31,8 @@ export default function ProfileForm() {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [newLanguage, setNewLanguage] = useState<string>("");
 
+    //TODO: Add function to add Profile Picture
+
     const { refreshUser } = useAuth();
 
     useEffect(() => {

@@ -1,5 +1,5 @@
 import AuthGuard from "@/components/shared/AuthGuard"; // Protect the page
-import ProfileForm from "./ProfileForm"; // Break out reusable components
+import ProfileForm from "@/components/ProfileForm"; // Break out reusable components
 
 export default function ProfilePage() {
     return (
