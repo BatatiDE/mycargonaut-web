@@ -95,7 +95,7 @@ export default function Map({ onLocationSelect, fromLocation, toLocation }: MapP
     )
 }
 
-*/x
+*/
 
 export default function Map(){
     return (
