@@ -4,24 +4,34 @@ import {Trip} from "@/types/trip";
 const TRIP_GRAPHQL_ENDPOINT = "http://localhost:8080/graphql"; // Ensure correct backend URL
 
 // Generic GraphQL Fetch Helper for Trips
-async function graphQLFetch(query: string) {
+async function graphQLFetch(query: string, variables?: Record<string, any>) {
     const token = localStorage.getItem("authToken");
+
+    if (!token) {
+        console.error("No auth token found in localStorage");
+        throw new Error("Please Login");
+    }
+
+    console.log("Sending request with auth token:", token);
 
     const response = await fetch(TRIP_GRAPHQL_ENDPOINT, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            ...(token && { Authorization: `Bearer ${token}` }),
+            Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({ query, variables }),
     });
 
     if (!response.ok) {
+        const errorBody = await response.text();
+        console.error(`GraphQL request failed: ${response.status} ${response.statusText}`, errorBody);
         throw new Error(`Error: ${response.status}`);
     }
 
     const result = await response.json();
     if (result.errors) {
+        console.error("GraphQL errors:", result.errors);
         throw new Error(result.errors[0]?.message || "GraphQL query failed.");
     }
 
@@ -62,33 +72,56 @@ export const tripApi = {
     // Additional functions (e.g., addTrip, bookTrip) can be added here
     addTrip: async (input: {
         driverId: number;
-        startPoint: string;
+        startingPoint: string;
         destinationPoint: string;
         date: string;
         time: string;
-        availableSpace: number;
+        price: number;
+        availableSeats: number;
+        freightSpace: number;
+        isFreightRide: boolean;
+        vehicle?: string;
+        notes?: string;
+        type: "OFFER" | "REQUEST";
     }) => {
         const query = `
-            mutation {
-                addTrip(input: {
-                    driverId: ${input.driverId},
-                    startPoint: "${input.startPoint}",
-                    destinationPoint: "${input.destinationPoint}",
-                    date: "${input.date}",
-                    time: "${input.time}",
-                    availableSeats: ${input.availableSpace}
-                }) {
+            mutation AddTrip($input: AddTripInput!) {
+                addTrip(input: $input) {
                     id
-                    startPoint
+                    startingPoint
                     destinationPoint
                     date
                     time
+                    price
                     availableSeats
+                    freightSpace
+                    isFreightRide
+                    vehicle
+                    notes
+                    type
                 }
             }
         `;
-        const data = await graphQLFetch(query);
-        return data.addTrip;
+
+        const variables = {
+            input: {
+                ...input,
+                driverId: String(input.driverId), // Convert to string as the schema expects ID!
+                price: Number(input.price),
+                availableSeats: Number(input.availableSeats),
+                freightSpace: Number(input.freightSpace),
+            }
+        };
+
+        try {
+            console.log('Sending GraphQL variables:', JSON.stringify(variables, null, 2));
+            const data = await graphQLFetch(query, variables);
+            console.log('GraphQL response:', JSON.stringify(data, null, 2));
+            return data.addTrip;
+        } catch (error) {
+            console.error('Error in addTrip:', error);
+            throw error;
+        }
     },
 
     updateUserRole: async (userId: number, role: string) => {
