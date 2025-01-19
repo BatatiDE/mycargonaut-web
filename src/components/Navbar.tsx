@@ -119,12 +119,14 @@ export default Navbar;
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useAuth } from "@/utils/AuthContext";
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
-import { Menu, Search, PlusCircle, User, LogIn, UserPlus } from 'lucide-react'
+import { Menu, Search, PlusCircle, User, LogIn, UserPlus, LogOut } from 'lucide-react'
 
 export default function Navbar() {
-    const [isOpen, setIsOpen] = useState(false)
+    const [isOpen, setIsOpen] = useState(false);
+    const { user, logout } = useAuth();
 
     const closeMenu = () => setIsOpen(false);
 
@@ -142,42 +144,56 @@ export default function Navbar() {
                     Angebot/Anfrage erstellen
                 </Button>
             </Link>
-            <Link href="/profile" onClick={onItemClick} className={isMobile ? "w-full" : ""}>
-                <Button variant="ghost" className={isMobile ? "w-full justify-start px-4" : ""}>
-                    <User className="mr-2 h-4 w-4" />
-                    Profil & Dashboard
-                </Button>
-            </Link>
-            {isMobile ? (
-                <div className="flex flex-col space-y-2 px-4 mt-4">
-                    <Link href="/login" onClick={onItemClick}>
-                        <Button variant="outline" className="border border-orange-500 text-orange-500 hover:bg-orange-50">
-                            <LogIn className="mr-2 h-4 w-4" />
-                            Anmelden
-                        </Button>
-                    </Link>
-                    <Link href="/register" onClick={onItemClick}>
-                        <Button variant="default" className="bg-orange-500 hover:bg-orange-600 text-white">
-                            <UserPlus className="mr-2 h-4 w-4" />
-                            Registrieren
-                        </Button>
-                    </Link>
+            {user && (
+                <Link href="/profile" onClick={onItemClick} className={isMobile ? "w-full" : ""}>
+                    <Button variant="ghost" className={isMobile ? "w-full justify-start px-4" : ""}>
+                        <User className="mr-2 h-4 w-4" />
+                        Profil & Dashboard
+                    </Button>
+                </Link>
+            )}
+            {user ? (
+                <div className="flex flex-col px-4 mt-4">
+                    <Button
+                        variant="outline"
+                        onClick={logout}
+                        className={isMobile ? "w-full border border-red-500 text-red-500 hover:bg-red-50" : "border border-red-500 text-red-500 hover:bg-red-50"}>
+                        <LogOut className="mr-2 h-4 w-4"/>
+                        Abmelden
+                    </Button>
                 </div>
-            ) : (
-                <>
-                    <Link href="/login" onClick={onItemClick}>
-                        <Button variant="outline" className="border border-orange-500 text-orange-500 hover:bg-orange-50">
-                            <LogIn className="mr-2 h-4 w-4" />
-                            Anmelden
-                        </Button>
-                    </Link>
-                    <Link href="/register" onClick={onItemClick}>
-                        <Button variant="default" className="bg-orange-500 hover:bg-orange-600 text-white">
-                            <UserPlus className="mr-2 h-4 w-4" />
-                            Registrieren
-                        </Button>
-                    </Link>
-                </>
+                    ) : (
+                    isMobile ? (
+                    <div className="flex flex-col space-y-2 px-4 mt-4">
+                        <Link href="/login" onClick={onItemClick}>
+                            <Button variant="outline" className="w-full border border-orange-500 text-orange-500 hover:bg-orange-50">
+                                <LogIn className="mr-2 h-4 w-4" />
+                                Anmelden
+                            </Button>
+                        </Link>
+                        <Link href="/register" onClick={onItemClick}>
+                            <Button variant="default" className="w-full bg-orange-500 hover:bg-orange-600 text-white">
+                                <UserPlus className="mr-2 h-4 w-4" />
+                                Registrieren
+                            </Button>
+                        </Link>
+                    </div>
+                ) : (
+                    <>
+                        <Link href="/login" onClick={onItemClick}>
+                            <Button variant="outline" className="border border-orange-500 text-orange-500 hover:bg-orange-50">
+                                <LogIn className="mr-2 h-4 w-4" />
+                                Anmelden
+                            </Button>
+                        </Link>
+                        <Link href="/register" onClick={onItemClick}>
+                            <Button variant="default" className="bg-orange-500 hover:bg-orange-600 text-white">
+                                <UserPlus className="mr-2 h-4 w-4" />
+                                Registrieren
+                            </Button>
+                        </Link>
+                    </>
+                )
             )}
         </>
     )
