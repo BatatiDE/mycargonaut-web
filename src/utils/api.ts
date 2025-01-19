@@ -1,3 +1,5 @@
+import {User} from "@/types/user";
+
 const API_URL = 'http://localhost:8080/api'; // Replace with your backend URL
 
 // Generic Fetch Helper
@@ -85,7 +87,7 @@ export const trackingApi = {
 
 // Profile APIs
 export const profileApi = {
-    fetchProfile: async () =>
+    fetchProfile: async (): Promise<User> =>
         fetch(`${API_URL}/users/me`, {
             method: "GET",
             headers: {
@@ -98,7 +100,7 @@ export const profileApi = {
             return response.json();
         }),
 
-    updateProfile: async (data: { name?: string; phone?: string }) => {
+    updateProfile: async (data: Partial<User>): Promise<User> => {
         const response = await fetch(`${API_URL}/users/me`, {
             method: "PUT",
             headers: {
@@ -165,8 +167,8 @@ export const searchApi = {
 
 // Create Offer APIs
 export const createOffer = async (data: {
-    start: string;
-    destination: string;
+    startingPoint: string;
+    destinationPoint: string;
     date: string;
     payloadDetails: string;
     price: number;

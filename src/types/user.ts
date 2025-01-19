@@ -1,16 +1,17 @@
-export interface User {
-    firstName: string
-    lastName: string
-    email: string
-    password: string
-    birthdate: number
-    isSmoker?: boolean
-    picture?: string
-    rating?: number
-    numPassengers?: number
-    numRides?: number
-    weightCarried?: number
-    distanceTraveled?: number
-    languages?: string
-    additionalNotes?: string
+export interface User{
+    id: number;
+    email: string;
+    firstName: string | null;
+    lastName: string | null;
+    phone: string | null;
+    picture: string | null;
+    birthdate: string | null;
+    additionalNote: string | null;
+    rating: number | null;
+    numRides: number | null;
+    numPassengers: number | null;
+    weightCarried: number | null;
+    distanceTraveled: number | null;
+    languages: string[] | null;
+    isSmoker: boolean | null;
 }
