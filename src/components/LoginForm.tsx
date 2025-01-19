@@ -25,7 +25,7 @@ export default function LoginForm() {
             await login(email, password); // Call the login function from AuthContext
             console.log("login called");
             console.log("Navigating to dashboard");
-            router.push("/dashboard"); // Redirect to dashboard on successful login
+            router.push("/create"); // Redirect to dashboard on successful login
         } catch (err) {
             const message = getErrorMessage(err);
             setError(message);
