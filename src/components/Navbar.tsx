@@ -153,7 +153,7 @@ export default function Navbar() {
                 </Link>
             )}
             {user ? (
-                <div className="flex flex-col px-4 mt-4">
+                <div className={`flex flex-col ${isMobile ? "px-4" : ""}`}>
                     <Button
                         variant="outline"
                         onClick={logout}
