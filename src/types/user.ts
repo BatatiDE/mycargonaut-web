@@ -14,4 +14,5 @@ export interface User{
     distanceTraveled: number | null;
     languages: string[] | null;
     isSmoker: boolean | null;
+    hasRated?: boolean
 }
