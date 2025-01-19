@@ -14,4 +14,5 @@ export interface Trip {
     driver?: User;
     status: 'SCHEDULED' | 'APPROACHING' | 'ARRIVED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELED' | 'DELAYED';
     type: string;
+    vehicle?: string;
 }
