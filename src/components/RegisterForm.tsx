@@ -23,31 +23,37 @@ export default function RegisterForm() {
 
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        setError(null) // Reset error state
+        setError(null); // Fehler zurücksetzen
 
         if (password !== confirmPassword) {
-            setError("Passwords do not match")
-            return
+            setError("Passwörter stimmen nicht überein.");
+            return;
         }
 
-        if (isOver18) {
-            try {
-                const userData = {
-                    firstName,
-                    lastName,
-                    email,
-                    password,
-                    birthdate: calculateAge(birthDate),
-                }
-                const data = await authApi.register(userData)
-                // Redirect to login page or directly log in the user
-                router.push('/login')
-            } catch (error) {
-                console.error('Registration failed:', error)
-                setError('Registration failed. Please try again.')
-            }
+        if (!isOver18) {
+            setError("Du musst 18 Jahre oder älter sein.");
+            return;
         }
-    }
+
+        try {
+            const userData = {
+                firstName,
+                lastName,
+                email,
+                password,
+                birthdate: birthDate, // Direkt als String senden
+            };
+
+            console.log("Sende Registrierungsdaten:", userData);
+            // const data = await authApi.register(userData);
+            await authApi.register(userData);
+            console.log("Registrierung erfolgreich:", userData);
+            router.push('/login'); // Weiterleitung nach Login
+        } catch (error: any) {
+            console.error("Registrierung fehlgeschlagen:", error);
+            setError(error.response?.data?.message || "Registrierung fehlgeschlagen. Bitte versuche es erneut.");
+        }
+    };
 
     const calculateAge = (birthDate: string) => {
         const today = new Date()

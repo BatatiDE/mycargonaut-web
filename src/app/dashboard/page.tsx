@@ -206,34 +206,31 @@ const DashboardPage = () => {
         try {
             const fetchedTrips = await tripApi.getTrips();
 
-            // Filter trips where driverId matches the logged-in user's ID
+            // Filtere Trips, bei denen die driverId mit der ID des eingeloggten Nutzers übereinstimmt
             const addedTrips = fetchedTrips.filter((trip) =>
                 String(trip.driverId) === String(user?.id))
                 .map((trip) => ({
                     ...trip,
-                    bookedCount:
-                    trip.total_capacity,
-
-                    progress:
-                        trip.status === "ONGOING"
-                            ? Math.floor(Math.random() * 100)
-                            : 0,
+                    bookedCount: trip.availableSeats,  // Verwende availableSeats anstelle von total_capacity
+                    progress: trip.status === "ONGOING" ? Math.floor(Math.random() * 100) : 0,
                 }));
-            // Filter trips booked by the logged-in user
-            const bookedTrips = fetchedTrips.filter((trip) => trip.bookedUsers.some((booking) =>
-                String(booking.userId) === String(user?.id))
-            );
-            setTrips({added: addedTrips, booked: bookedTrips});
 
-            // Mock destination data
+            // Filtere Trips, die vom eingeloggten Nutzer gebucht wurden
+            const bookedTrips = fetchedTrips.filter((trip) => trip.bookedUsers?.some((booking: { userId: string }) =>
+                String(booking.userId) === String(user?.id)
+            ));
+
+            setTrips({ added: addedTrips, booked: bookedTrips });
+
+            // Mock-Daten für Ziele
             setDestinations([
-                {id: "1", location: "Hamburg", status: "SCHEDULED"},
-                {id: "2", location: "Berlin", status: "Booked"},
-                {id: "3", location: "Munich", status: "Confirmed"},
+                { id: "1", location: "Hamburg", status: "SCHEDULED" },
+                { id: "2", location: "Berlin", status: "Booked" },
+                { id: "3", location: "Munich", status: "Confirmed" },
             ]);
         } catch (err) {
-            console.error("Error fetching data:", err);
-            setError("Failed to load data. Please try again.");
+            console.error("Fehler beim Laden der Daten:", err);
+            setError("Daten konnten nicht geladen werden. Bitte versuche es erneut.");
         } finally {
             setLoading(false);
         }
@@ -241,11 +238,11 @@ const DashboardPage = () => {
 
     useEffect(() => {
         if (user?.id) {
-            (async () => await fetchData())();        }
+            (async () => await fetchData())();
+        }
     }, [user?.id]);
 
-
-    if (loading) return <div className="text-center">Loading dashboard...</div>;
+    if (loading) return <div className="text-center">Dashboard wird geladen...</div>;
     if (error) return <div className="text-red-500 text-center">{error}</div>;
 
     return (

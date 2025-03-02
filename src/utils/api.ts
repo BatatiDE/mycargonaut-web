@@ -31,16 +31,46 @@ async function apiFetch(endpoint: string, options: RequestInit = {}) {
 
 // Authentication APIs
 export const authApi = {
-    register: async (data: { email: string; password: string }) =>
-        apiFetch('/register', {
-            method: 'POST',
-            body: JSON.stringify(data),
-        }),
-    login: async (data: { email: string; password: string }) =>
-        apiFetch('/login', {
-            method: 'POST',
-            body: JSON.stringify(data),
-        }),
+    register: async (userData: any) => {
+        try {
+            const response = await fetch("/api/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(userData),
+            });
+
+            if (!response.ok) {
+                // API gibt einen Fehlerstatus zurück (z. B. 400)
+                const errorData = await response.text();
+                throw new Error(errorData || "Registrierung fehlgeschlagen");
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Fehler bei der Registrierung:", error);
+            throw error;
+        }
+    },
+
+    login: async (email: string, password: string) => {
+        try {
+            const response = await fetch("/api/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.text();
+                throw new Error(errorData || "Login fehlgeschlagen");
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Fehler beim Login:", error);
+            throw error;
+        }
+    },
     resetPassword: async (email: string) =>
         apiFetch('/reset-password', {
             method: 'POST',

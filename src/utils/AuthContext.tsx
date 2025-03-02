@@ -53,13 +53,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // Login function
     const login = async (email: string, password: string) => {
-        const { token, user } = await authApi.login({ email, password }); // Use authApi.login
+        const { token, user } = await authApi.login(email, password); // Übergibt die Argumente einzeln
         setToken(token);
         setUser(user);
 
         localStorage.setItem("authToken", token);
         localStorage.setItem("authUser", JSON.stringify(user));
     };
+
 
     // Logout function
     const logout = () => {

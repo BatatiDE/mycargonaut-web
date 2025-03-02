@@ -15,4 +15,6 @@ export interface Trip {
     status: 'SCHEDULED' | 'APPROACHING' | 'ARRIVED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELED' | 'DELAYED';
     type: string;
     vehicle?: string;
+    total_capacity: number;  // Diese Eigenschaft hinzufügen, wenn sie im Code verwendet wird
+    bookedUsers?: { userId: string }[];  // Diese Eigenschaft hinzufügen, wenn du 'bookedUsers' verwendest
 }

@@ -1,3 +1,4 @@
+/*
 import LocationMapClient from "@/components/LocationMapClient";
 
 
@@ -6,3 +7,5 @@ const LocationMap = (props: unknown) => {
 };
 
 export default LocationMap;
+
+*/

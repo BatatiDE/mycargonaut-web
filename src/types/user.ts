@@ -1,5 +1,5 @@
-export interface User{
-    id: number;
+export interface User {
+    id: string;  // Ändere id auf string oder auf 'number' im Backend.
     email: string;
     firstName: string | null;
     lastName: string | null;
@@ -14,5 +14,6 @@ export interface User{
     distanceTraveled: number | null;
     languages: string[] | null;
     isSmoker: boolean | null;
-    hasRated?: boolean
+    hasRated?: boolean;
+    isActive: boolean;
 }

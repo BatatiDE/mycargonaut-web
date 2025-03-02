@@ -21,10 +21,10 @@ import {useAuth} from "@/utils/AuthContext";
 const Map = dynamic(() => import('./Map'), { ssr: false })
 
 interface OfferRequestFormProps {
-    onLocationSelect: (lat: number, lng: number, location: 'from' | 'to') => void
+    onLocationSelectAction: (lat: number, lng: number, location: 'from' | 'to') => void;
 }
 
-export default function OfferRequestForm({ onLocationSelect }: OfferRequestFormProps) {
+export default function OfferRequestForm({ onLocationSelectAction }: OfferRequestFormProps) {
     const router = useRouter()
     const {user} = useAuth();
     const [error, setError] = useState("");

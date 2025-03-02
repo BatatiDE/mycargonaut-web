@@ -5,7 +5,7 @@ import { tripApi } from "@/utils/tripApi";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/utils/AuthContext";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
-import LocationMap from "@/components/LocationMap";
+// import LocationMap from "@/components/LocationMap";
 
 export default function AddTripPage() {
     const router = useRouter();

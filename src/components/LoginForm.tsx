@@ -22,15 +22,16 @@ export default function LoginForm() {
         setError("");
 
         try {
-            await login(email, password); // Call the login function from AuthContext
-            console.log("login called");
-            console.log("Navigating to dashboard");
-            router.push("/create"); // Redirect to dashboard on successful login
-        } catch (err) {
-            const message = getErrorMessage(err);
-            setError(message);
+            console.log("Login-Daten:", { email, password });
+            await login(email, password);
+            console.log("Login erfolgreich! Weiterleitung...");
+            router.push("/create");
+        } catch (err: any) {
+            console.error("Login-Fehler:", err);
+            setError(err.response?.data?.message || "Login fehlgeschlagen. Bitte versuche es erneut.");
         }
     };
+
 
     return (
         <form onSubmit={handleLogin} className="space-y-4">

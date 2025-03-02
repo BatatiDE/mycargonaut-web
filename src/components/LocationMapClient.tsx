@@ -1,3 +1,5 @@
+/*
+
 import React, { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -119,6 +121,59 @@ const LocationMapClient: React.FC<LocationMapProps> = ({
             </button>
         </>
     );
+};
+
+export default LocationMapClient;
+*/
+
+"use client";
+import React, { useEffect, useRef, useState } from "react";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
+interface LocationMapProps {
+    latitude: number;
+    longitude: number;
+    onLocationChange: (lat: number, lng: number, address?: string) => void;
+}
+
+const LocationMapClient: React.FC<LocationMapProps> = ({ latitude, longitude, onLocationChange }) => {
+    const mapContainerRef = useRef<HTMLDivElement>(null);
+    const mapRef = useRef<L.Map | null>(null);
+    const markerRef = useRef<L.Marker | null>(null);
+
+    useEffect(() => {
+        if (!mapContainerRef.current || mapRef.current) return;
+
+        const mapInstance = L.map(mapContainerRef.current).setView([latitude, longitude], 13);
+        mapRef.current = mapInstance;
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }).addTo(mapInstance);
+
+        const marker = L.marker([latitude, longitude], { draggable: true }).addTo(mapInstance);
+        markerRef.current = marker;
+
+        marker.on("dragend", async () => {
+            const newLatLng = marker.getLatLng();
+            onLocationChange(newLatLng.lat, newLatLng.lng);
+
+            // Reverse Geocoding mit OpenStreetMap Nominatim API
+            try {
+                const response = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${newLatLng.lat}&lon=${newLatLng.lng}`
+                );
+                const data = await response.json();
+                const address = data.display_name;
+                onLocationChange(newLatLng.lat, newLatLng.lng, address);
+            } catch (error) {
+                console.error("Fehler beim Abrufen der Adresse:", error);
+            }
+        });
+    }, []);
+
+    return <div ref={mapContainerRef} style={{ height: "400px", width: "100%" }} />;
 };
 
 export default LocationMapClient;

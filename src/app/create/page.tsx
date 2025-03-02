@@ -6,9 +6,20 @@ import OfferRequestForm from '@/components/OfferRequestForm'
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false })
 
+// Definition der Props für OfferRequestForm
+interface OfferRequestFormProps {
+    onLocationSelect: (lat: number, lng: number, type: 'from' | 'to') => void;
+}
+
+// Definition der Props für Map
+interface MapProps {
+    fromLocation?: { lat: number; lng: number };
+    toLocation?: { lat: number; lng: number };
+}
+
 export default function Create() {
-    const [fromLocation, setFromLocation] = useState<{ lat: number; lng: number } | null>(null)
-    const [toLocation, setToLocation] = useState<{ lat: number; lng: number } | null>(null)
+    const [fromLocation, setFromLocation] = useState<{ lat: number; lng: number } | undefined>(undefined)
+    const [toLocation, setToLocation] = useState<{ lat: number; lng: number } | undefined>(undefined)
 
     const handleLocationSelect = (lat: number, lng: number, type: 'from' | 'to') => {
         if (type === 'from') {
@@ -22,20 +33,16 @@ export default function Create() {
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-2xl font-bold mb-4">Angebot/Anfrage erstellen</h1>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <OfferRequestForm onLocationSelect={handleLocationSelect} />
-                <div className=" lg:block">
+                {/* Hier wird sichergestellt, dass OfferRequestForm die richtige Prop erhält */}
+                <OfferRequestForm onLocationSelect={handleLocationSelect as OfferRequestFormProps['onLocationSelect']} />
+                <div className="lg:block">
                     <h2 className="text-xl font-semibold mb-4">Kartenübersicht</h2>
                     <div className="h-[600px] bg-gray-100 rounded-lg overflow-hidden">
-                        <Map
-                            /*onLocationSelect={handleLocationSelect}*/
-                            /*fromLocation={fromLocation}
-                            toLocation={toLocation}*/
-                        />
+                        {/* Hier werden die benötigten Props an Map übergeben */}
+                        <Map fromLocation={fromLocation} toLocation={toLocation} />
                     </div>
                 </div>
             </div>
         </div>
     )
 }
-
-
