@@ -11,7 +11,7 @@ import { authApi, profileApi } from "@/utils/api";
 import {useRouter} from "next/navigation"; // Use the existing authApi
 interface User {
     id: string;
-    email: string;
+    email?: string;
     name?: string;
     role?: string;
 }

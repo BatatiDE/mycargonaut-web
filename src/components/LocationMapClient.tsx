@@ -125,55 +125,25 @@ const LocationMapClient: React.FC<LocationMapProps> = ({
 
 export default LocationMapClient;
 */
+import React from "react";
+import { useGeoLocation } from "@/hooks/useGeoLocation";
+import Map from "@/components/Map";
 
-"use client";
-import React, { useEffect, useRef, useState } from "react";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-
-interface LocationMapProps {
-    latitude: number;
-    longitude: number;
-    onLocationChange: (lat: number, lng: number, address?: string) => void;
+interface LocationMapClientProps {
+    onLocationChange: (lat: number, lng: number) => void;
 }
 
-const LocationMapClient: React.FC<LocationMapProps> = ({ latitude, longitude, onLocationChange }) => {
-    const mapContainerRef = useRef<HTMLDivElement>(null);
-    const mapRef = useRef<L.Map | null>(null);
-    const markerRef = useRef<L.Marker | null>(null);
+const LocationMapClient: React.FC<LocationMapClientProps> = ({onLocationChange}) => {
+    const { location, address, loading } = useGeoLocation();
 
-    useEffect(() => {
-        if (!mapContainerRef.current || mapRef.current) return;
+    if (loading) return <div>Loading your location...</div>;
 
-        const mapInstance = L.map(mapContainerRef.current).setView([latitude, longitude], 13);
-        mapRef.current = mapInstance;
-
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        }).addTo(mapInstance);
-
-        const marker = L.marker([latitude, longitude], { draggable: true }).addTo(mapInstance);
-        markerRef.current = marker;
-
-        marker.on("dragend", async () => {
-            const newLatLng = marker.getLatLng();
-            onLocationChange(newLatLng.lat, newLatLng.lng);
-
-            // Reverse Geocoding mit OpenStreetMap Nominatim API
-            try {
-                const response = await fetch(
-                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${newLatLng.lat}&lon=${newLatLng.lng}`
-                );
-                const data = await response.json();
-                const address = data.display_name;
-                onLocationChange(newLatLng.lat, newLatLng.lng, address);
-            } catch (error) {
-                console.error("Fehler beim Abrufen der Adresse:", error);
-            }
-        });
-    }, []);
-
-    return <div ref={mapContainerRef} style={{ height: "400px", width: "100%" }} />;
+    return (
+        <div>
+            {location && <Map fromLocation={location} toLocation={location} />}
+            {address && <div>Address: {address}</div>}
+        </div>
+    );
 };
 
 export default LocationMapClient;

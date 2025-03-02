@@ -5,8 +5,9 @@ import { tripApi } from "@/utils/tripApi";
 
 import { useAuth } from "@/utils/AuthContext";
 import StarRating from "@/components/rating/StarRating";
+import { Trip } from "@/types/trip"
 
-
+/*
 interface Trip {
     id: string;
     startPoint: string;
@@ -17,9 +18,9 @@ interface Trip {
     status: "SCHEDULED" | "ONGOING" | "COMPLETED" | "CANCELED";
     progress?: number;
     driverId: string;
-    driverRating?:number;
-
+    driverRating?: number;
 }
+*/
 
 const TripsPage = () => {
     const [trips, setTrips] = useState<Trip[]>([]);
@@ -31,23 +32,21 @@ const TripsPage = () => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchTrips = async () => {
+         const fetchTrips = async () => {
             try {
                 const fetchedTrips = await tripApi.getTrips();
-                const tripsWithProgress = fetchedTrips.map((trip) => ({
-                    ...trip,
-                    progress:
-                        trip.status === "ONGOING"
-                            ? Math.floor(Math.random() * 100)
-                            : 0,
+
+                const tripsWithProgress: Trip[] = fetchedTrips.map((trip) => ({
+                    ...trip, // Alle Originalwerte übernehmen
+                    startingPoint: trip.startingPoint ?? "", // Alias setzen, Fallback auf leeren String
+                    availableSpace: trip.availableSeats ?? 0, // Alias setzen, Fallback auf 0
+                    progress: trip.status === "ONGOING" ? Math.floor(Math.random() * 100) : 0,
                 }));
 
                 setTrips(tripsWithProgress);
 
-                // Extract destinations
-                const fetchedDestinations = [
-                    ...new Set(fetchedTrips.map((trip) => trip.destinationPoint)),
-                ];
+                // Ziele extrahieren
+                const fetchedDestinations = [...new Set(fetchedTrips.map((trip) => trip.destinationPoint))];
                 setDestinations(fetchedDestinations);
             } catch (err) {
                 console.error("Error fetching trips:", err);
@@ -55,10 +54,11 @@ const TripsPage = () => {
             } finally {
                 setLoading(false);
             }
+             await fetchTrips();
+             await fetchDriverRatings();
         };
-
-        fetchTrips();
-        fetchDriverRatings();
+         // fetchTrips();
+         // fetchDriverRatings();
     }, []);
 
     const fetchDriverRatings = async () => {
@@ -106,7 +106,7 @@ const TripsPage = () => {
                         trip.id === tripId
                             ? {
                                 ...trip,
-                                availableSpace: trip.availableSpace - 1,
+                                availableSpace: (trip.availableSpace as number) - 1,
                             }
                             : trip
                     )
@@ -169,7 +169,7 @@ const TripsPage = () => {
                         <ul className="space-y-4">
                             {trips
                                 .filter((trip) =>
-                                    trip.startPoint
+                                    trip.startingPoint
                                         .toLowerCase()
                                         .includes(tripFilter.toLowerCase())
                                 )
@@ -180,7 +180,7 @@ const TripsPage = () => {
                                     >
 
                                         <h2 className="text-lg font-semibold">
-                                            {trip.startPoint} → {trip.destinationPoint}
+                                            {trip.startingPoint} → {trip.destinationPoint}
                                         </h2>
                                         <p>
                                             <strong>Date:</strong> {trip.date} |{" "}
@@ -188,9 +188,9 @@ const TripsPage = () => {
                                         </p>
 
                                         {/* Available Space */}
-                                        {trip.availableSpace > 0 ? (
+                                        {(trip.availableSpace ?? 0) > 0 ? (
                                             <p className="text-green-500">
-                                                🟢 {trip.availableSpace} spaces left
+                                                🟢 {trip.availableSpace ?? 0} spaces left
                                             </p>
                                         ) : (
                                             <p className="text-red-500">
@@ -234,15 +234,16 @@ const TripsPage = () => {
                                             </div>
                                         )}
                                         {/* Book Trip Button */}
-                                        {trip.availableSpace > 0 && trip.status == "SCHEDULED" &&
+                                        {trip.availableSpace != null && trip.availableSpace > 0 && trip.status === "SCHEDULED" &&
                                             String(user?.id) !== String(trip.driverId) && (
-                                            <button
-                                                className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                                                onClick={() => handleBooking(trip.id)}
-                                            >
-                                                Book Trip
-                                            </button>
-                                        )}
+                                                <button
+                                                    className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                                    onClick={() => handleBooking(trip.id)}
+                                                >
+                                                    Book Trip
+                                                </button>
+                                            )
+                                        }
                                         {String(user?.id) === String(trip.driverId) && (
                                             <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs">
                                                You are the driver

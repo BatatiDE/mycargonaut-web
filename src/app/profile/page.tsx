@@ -323,7 +323,7 @@ export default function Profile() {
                                                         rideId={ride.id}
                                                         isOffered={true}
                                                         type={ride.type}
-                                                        onRideComplete={handleRideComplete}
+                                                        onRideCompleteAction={handleRideComplete}
                                                         from={ride.from}
                                                         to={ride.to}
                                                         driver={ride.driver}
@@ -336,7 +336,7 @@ export default function Profile() {
                                                     rideId={ride.id}
                                                     isOffered={false}
                                                     type={ride.type}
-                                                    onRideComplete={handleRideComplete}
+                                                    onRideCompleteAction={handleRideComplete}
                                                     from={ride.from}
                                                     to={ride.to}
                                                     driver={ride.driver}

@@ -1,16 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { tripApi } from "@/utils/tripApi";
-
-interface Trip {
-    id: string;
-    startPoint: string;
-    destinationPoint: string;
-    date: string;
-    time: string;
-    availableSpace: number;
-}
+import { tripApi } from "@/utils/tripApi";  // Diese importierte API wird benutzt
+import { Trip } from "@/types/trip"; // Hier Trip importieren
 
 export default function ViewTripsPage() {
     const [trips, setTrips] = useState<Trip[]>([]);
@@ -18,15 +10,15 @@ export default function ViewTripsPage() {
     useEffect(() => {
         const fetchTrips = async () => {
             try {
-                const data = await tripApi.getTrips();
-                setTrips(data.data.getTrips);
+                const response = await tripApi.getTrips();
+                setTrips(response); // Die getTrips-Funktion gibt direkt ein Trip-Array zurück
             } catch (error) {
                 console.error("Failed to fetch trips", error);
             }
         };
 
-        fetchTrips();
-    }, []);
+        fetchTrips(); // Aufruf der async Funktion im useEffect
+    }, []); // Leeres Array sorgt dafür, dass der Effekt nur einmal ausgeführt wird
 
     return (
         <div className="p-6">
@@ -34,10 +26,10 @@ export default function ViewTripsPage() {
             <ul>
                 {trips.map((trip) => (
                     <li key={trip.id} className="border p-4 mb-4 rounded shadow">
-                        <h2 className="font-bold">{trip.startPoint} → {trip.destinationPoint}</h2>
+                        <h2 className="font-bold">{trip.startingPoint} → {trip.destinationPoint}</h2>
                         <p>Date: {trip.date}</p>
                         <p>Time: {trip.time}</p>
-                        <p>Available Space: {trip.availableSpace}</p>
+                        <p>Available Seats: {trip.availableSeats}</p>
                     </li>
                 ))}
             </ul>

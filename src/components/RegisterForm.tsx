@@ -55,16 +55,15 @@ export default function RegisterForm() {
         }
     };
 
-    const calculateAge = (birthDate: string) => {
-        const today = new Date()
-        const birth = new Date(birthDate)
-        let age = today.getFullYear() - birth.getFullYear()
-        const monthDiff = today.getMonth() - birth.getMonth()
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-            age--
+    const calculateAge = (birthdate: Date): number => {
+        const today = new Date();
+        let age = today.getFullYear() - birthdate.getFullYear();
+        const m = today.getMonth() - birthdate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthdate.getDate())) {
+            age--;
         }
-        return age
-    }
+        return age;
+    };
 
     return (
         <form onSubmit={onSubmit} className="space-y-4">

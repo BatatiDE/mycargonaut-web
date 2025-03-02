@@ -13,7 +13,7 @@ interface RideStatusProps {
     rideId: string
     isOffered: boolean
     type: 'ride' | 'freight'
-    onRideComplete: (rideId: string) => void
+    onRideCompleteAction: (rideId: string) => void
     from: string
     to: string
     driver: User
@@ -83,7 +83,7 @@ const statusInfo: Record<StatusType, StatusInfo> = {
     }
 }
 
-export default function RideStatus({ rideId, isOffered, type, onRideComplete, from, to, driver, passengers = [] }: RideStatusProps) {
+export default function RideStatus({ rideId, isOffered, type, onRideCompleteAction, from, to, driver, passengers = [] }: RideStatusProps) {
     const [status, setStatus] = useState<StatusType>('scheduled')
     const [isSharing, setIsSharing] = useState(false)
     const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null)
@@ -193,7 +193,7 @@ export default function RideStatus({ rideId, isOffered, type, onRideComplete, fr
             case 'Fahrt beenden':
                 setStatus('completed')
                 setIsSharing(false)
-                onRideComplete(rideId)
+                onRideCompleteAction(rideId)
                 toast({
                     title: "Fahrt beendet",
                     description: "Die Fahrt wurde erfolgreich beendet.",

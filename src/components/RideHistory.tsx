@@ -171,7 +171,7 @@ export default function RideHistory({ rides, currentUserId }: RideHistoryProps) 
                                             <Rating
                                                 isDriver={true}
                                                 isFreightRide={ride.type === 'freight'}
-                                                onSubmit={(ratings) => handleRatingSubmit(ride.id.toString(), passenger.id, ratings)}
+                                                onSubmitAction={(ratings) => handleRatingSubmit(ride.id.toString(), passenger.id, ratings)}
                                                 participantName={passenger.name}
                                             />
                                         </div>
@@ -183,7 +183,7 @@ export default function RideHistory({ rides, currentUserId }: RideHistoryProps) 
                                         <Rating
                                             isDriver={false}
                                             isFreightRide={ride.type === 'freight'}
-                                            onSubmit={(ratings) => handleRatingSubmit(ride.id.toString(), ride.driver.id.toString(), ratings)}
+                                            onSubmitAction={(ratings) => handleRatingSubmit(ride.id.toString(), ride.driver.id.toString(), ratings)}
                                             participantName={`${ride.driver.firstName} ${ride.driver.lastName}`}
                                         />
                                     </div>

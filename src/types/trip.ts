@@ -16,9 +16,10 @@ export interface Trip {
     type: string;
     vehicle?: string;
     total_capacity: number;
-    bookedUsers?: { userId: string; status: string, id: string  }[];
+    bookedUsers?: { userId: string; status: string, id: string }[];
     startPoint?: string; // Falls du diesen alias brauchst
     availableSpace?: number; // Falls du diesen alias brauchst
     progress?: number;
     rating?: number;
+    driverRating?: number;
 }

@@ -9,11 +9,11 @@ import { Star } from 'lucide-react'
 interface RatingProps {
     isDriver: boolean
     isFreightRide: boolean
-    onSubmit: (ratings: number[]) => void
+    onSubmitAction: (ratings: number[]) => void
     participantName: string
 }
 
-export default function Rating({ isDriver, isFreightRide, onSubmit, participantName }: RatingProps) {
+export default function Rating({ isDriver, isFreightRide, onSubmitAction, participantName }: RatingProps) {
     const [ratings, setRatings] = useState<number[]>([0, 0, 0, 0])
 
     const questions = isDriver
@@ -39,7 +39,7 @@ export default function Rating({ isDriver, isFreightRide, onSubmit, participantN
     }
 
     const handleSubmit = () => {
-        onSubmit(ratings.slice(0, questions.length))
+        onSubmitAction(ratings.slice(0, questions.length))
     }
 
     return (
