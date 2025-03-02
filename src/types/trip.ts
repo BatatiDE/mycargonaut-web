@@ -12,9 +12,13 @@ export interface Trip {
     price: number;
     driverId: string;
     driver?: User;
-    status: 'SCHEDULED' | 'APPROACHING' | 'ARRIVED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELED' | 'DELAYED';
+    status: 'SCHEDULED' | 'APPROACHING' | 'ARRIVED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELED' | 'DELAYED' | 'ONGOING';
     type: string;
     vehicle?: string;
-    total_capacity: number;  // Diese Eigenschaft hinzufügen, wenn sie im Code verwendet wird
-    bookedUsers?: { userId: string }[];  // Diese Eigenschaft hinzufügen, wenn du 'bookedUsers' verwendest
+    total_capacity: number;
+    bookedUsers?: { userId: string; status: string, id: string  }[];
+    startPoint?: string; // Falls du diesen alias brauchst
+    availableSpace?: number; // Falls du diesen alias brauchst
+    progress?: number;
+    rating?: number;
 }

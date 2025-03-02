@@ -24,7 +24,7 @@ interface OfferRequestFormProps {
     onLocationSelectAction: (lat: number, lng: number, location: 'from' | 'to') => void;
 }
 
-export default function OfferRequestForm({ onLocationSelectAction }: OfferRequestFormProps) {
+export default function OfferRequestForm({ onLocationSelectAction  }: OfferRequestFormProps) {
     const router = useRouter()
     const {user} = useAuth();
     const [error, setError] = useState("");

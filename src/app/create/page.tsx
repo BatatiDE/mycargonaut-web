@@ -13,8 +13,8 @@ interface OfferRequestFormProps {
 
 // Definition der Props für Map
 interface MapProps {
-    fromLocation?: { lat: number; lng: number };
-    toLocation?: { lat: number; lng: number };
+    fromLocation?: { lat: number; lng: number } | undefined;
+    toLocation?: { lat: number; lng: number } | undefined;
 }
 
 export default function Create() {
@@ -34,12 +34,12 @@ export default function Create() {
             <h1 className="text-2xl font-bold mb-4">Angebot/Anfrage erstellen</h1>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Hier wird sichergestellt, dass OfferRequestForm die richtige Prop erhält */}
-                <OfferRequestForm onLocationSelect={handleLocationSelect as OfferRequestFormProps['onLocationSelect']} />
+                <OfferRequestForm onLocationSelectAction={handleLocationSelect as OfferRequestFormProps['onLocationSelect']} />
                 <div className="lg:block">
                     <h2 className="text-xl font-semibold mb-4">Kartenübersicht</h2>
                     <div className="h-[600px] bg-gray-100 rounded-lg overflow-hidden">
                         {/* Hier werden die benötigten Props an Map übergeben */}
-                        <Map fromLocation={fromLocation} toLocation={toLocation} />
+                        <Map fromLocation={fromLocation ?? { lat: 0, lng: 0 }} toLocation={toLocation ?? { lat: 0, lng: 0 }} />
                     </div>
                 </div>
             </div>

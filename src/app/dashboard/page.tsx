@@ -6,7 +6,7 @@ import {useAuth} from "@/utils/AuthContext";
 import {useRouter} from "next/navigation";
 import RatingModal from "@/components/rating/RatingModal";
 import StarRating from "@/components/rating/StarRating";
-
+import { Trip } from "@/types/trip";
 
 interface Booking {
     id: string;
@@ -14,7 +14,7 @@ interface Booking {
     status: string;
     createdAt: string;
 }
-
+/*
 interface Trip {
     id: string;
     driverId: string; // Ensure driverId is included
@@ -30,6 +30,7 @@ interface Trip {
     rating?: number;
 
 }
+*/
 
 interface Destination {
     id: string;
@@ -135,8 +136,13 @@ const DashboardPage = () => {
         const trip = trips.added.concat(trips.booked).find((t) => t.id === tripId);
         if (!trip) return null;
 
+        if (trip.bookedUsers && trip.bookedUsers.length > 0) {
+            // Jetzt ist sichergestellt, dass bookedUsers existiert
+            trip.bookedUsers.forEach(user => console.log(user.userId));
+        }
+
         if (user?.id === trip.driverId) {
-            return trip.bookedUsers.find((booking) => booking.status === "Booked")
+            return trip.bookedUsers?.find((booking) => booking.status === "Booked")
                 ?.userId;
         } else if (user?.id) {
             return trip.driverId;
@@ -205,8 +211,10 @@ const DashboardPage = () => {
     const fetchData = async () => {
         try {
             const fetchedTrips = await tripApi.getTrips();
+            console.log("Fetched Trips:", fetchedTrips);
 
             // Filtere Trips, bei denen die driverId mit der ID des eingeloggten Nutzers übereinstimmt
+            /*
             const addedTrips = fetchedTrips.filter((trip) =>
                 String(trip.driverId) === String(user?.id))
                 .map((trip) => ({
@@ -214,6 +222,15 @@ const DashboardPage = () => {
                     bookedCount: trip.availableSeats,  // Verwende availableSeats anstelle von total_capacity
                     progress: trip.status === "ONGOING" ? Math.floor(Math.random() * 100) : 0,
                 }));
+            */
+
+            const addedTrips: Trip[] = fetchedTrips.map((trip) => ({
+                ...trip,
+                // startPoint: trip.startingPoint,
+                startingPoint: trip.startingPoint,
+                availableSpace: trip.availableSeats, // Mappe availableSeats auf availableSpace
+                status: trip.status === "IN_PROGRESS" ? "ONGOING" : trip.status,
+            }));
 
             // Filtere Trips, die vom eingeloggten Nutzer gebucht wurden
             const bookedTrips = fetchedTrips.filter((trip) => trip.bookedUsers?.some((booking: { userId: string }) =>
@@ -342,7 +359,7 @@ const DashboardPage = () => {
                         <ul className="space-y-4">
                             {trips[currentFilter]
                                 .filter((trip) =>
-                                    trip.startPoint
+                                    trip.startingPoint
                                         .toLowerCase()
                                         .includes(tripFilter.toLowerCase())
                                 )
@@ -352,7 +369,7 @@ const DashboardPage = () => {
                                         className="border p-4 rounded shadow relative"
                                     >
                                         <h3 className="font-semibold">
-                                            {trip.startPoint} →{" "}
+                                            {trip.startingPoint} →{" "}
                                             {trip.destinationPoint}
                                         </h3>
                                         <p>
@@ -372,12 +389,12 @@ const DashboardPage = () => {
                                                 className="relative cursor-pointer text-blue-500"
                                                 title="Booked Spaces"
                                             >
-                                                🔵 {trip.bookedUsers.filter((booking) => booking.status === "Booked").length}                                            </div>
+                                                🔵 {trip.bookedUsers?.filter((booking) => booking.status === "Booked").length}                                            </div>
                                             <div
                                                 className="relative cursor-pointer text-orange-500"
                                                 title="Confirmed Bookings"
                                             >
-                                                🟠 {trip.bookedUsers.filter((booking) => booking.status === "Confirmed").length}
+                                                🟠 {trip.bookedUsers?.filter((booking) => booking.status === "Confirmed").length}
                                             </div>
                                         </div>
                                         {/* List of Bookings */}
@@ -407,7 +424,7 @@ const DashboardPage = () => {
                                             </div>
                                         )}
                                         {/* Passenger Booking Status */}
-                                        {trip.bookedUsers.some((booking) => String(booking.userId) === String(user?.id)) && (
+                                        {trip.bookedUsers?.some((booking) => String(booking.userId) === String(user?.id)) && (
                                             <span
                                                 className={`text-sm px-2 py-1 rounded ${
                                                     trip.bookedUsers.find((booking) => String(booking.userId) === String(user?.id))?.status === "Booked"
@@ -457,7 +474,7 @@ const DashboardPage = () => {
                                                     <div className="mt-4">
                                                         <h4 className="font-bold">Bookings:</h4>
                                                         <ul className="space-y-2">
-                                                            {trip.bookedUsers.map((booking) => (
+                                                            {trip.bookedUsers?.map((booking) => (
                                                                 <li key={booking.id} className="flex justify-between items-center">
                                                                     <p>User ID: {booking.userId}</p>
                                                                     <button
