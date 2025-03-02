@@ -16,7 +16,7 @@ export default function ProfilePage() {
 'use client'
 
 import {useState} from 'react'
-import {Card, CardContent, CardHeader, CardTitle, CardDescription} from "@/components/ui/card"
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
 import RideStatus from '@/components/RideStatus'
 import RideHistory from '@/components/RideHistory'
@@ -34,13 +34,22 @@ export default function Profile() {
             status: 'Upcoming',
             type: 'ride' as const,
             isOffered: true,
+            isRated: false,  // Hinzugefügt
+            ratings: {},  // Hinzugefügt
             driver: {
                 id: 'currentUserId',
                 firstName: 'John',
                 lastName: 'Doe',
                 picture: '/placeholder.svg',
                 rating: 4.5,
-                numRides: 50
+                numRides: 50,
+                hasRated: false,  // Hinzugefügt
+                isRated: false,  // Hinzugefügt
+                email: "",  // Falls Pflichtfeld
+                phone: "",  // Falls Pflichtfeld
+                birthdate: "",  // Falls Pflichtfeld
+                additionalNote: "",  // Falls Pflichtfeld
+                ratings: {},  // Falls nötig
             },
             passengers: [
                 {
@@ -48,14 +57,18 @@ export default function Profile() {
                     name: 'Anna Müller',
                     picture: '/placeholder.svg',
                     rating: 4.2,
-                    numRides: 15
+                    numRides: 15,
+                    hasRated: false,  // Hinzugefügt
+                    isRated: false,  // Hinzugefügt
                 },
                 {
                     id: 'passenger2',
                     name: 'Max Schmidt',
                     picture: '/placeholder.svg',
                     rating: 4.7,
-                    numRides: 30
+                    numRides: 30,
+                    hasRated: false,  // Hinzugefügt
+                    isRated: false,  // Hinzugefügt
                 }
             ]
         },
@@ -73,7 +86,14 @@ export default function Profile() {
                 lastName: 'Doe',
                 picture: '/placeholder.svg',
                 rating: 4.5,
-                numRides: 50
+                numRides: 50,
+                hasRated: false,  // Hinzugefügt
+                isRated: false,  // Hinzugefügt
+                email: "",  // Falls Pflichtfeld
+                phone: "",  // Falls Pflichtfeld
+                birthdate: "",  // Falls Pflichtfeld
+                additionalNote: "",  // Falls Pflichtfeld
+                ratings: {},  // Falls nötig
             },
             passengers: [
                 {
@@ -99,7 +119,14 @@ export default function Profile() {
                 lastName: 'Doe',
                 picture: '/placeholder.svg',
                 rating: 4.5,
-                numRides: 50
+                numRides: 50,
+                hasRated: false,  // Hinzugefügt
+                isRated: false,  // Hinzugefügt
+                email: "",  // Falls Pflichtfeld
+                phone: "",  // Falls Pflichtfeld
+                birthdate: "",  // Falls Pflichtfeld
+                additionalNote: "",  // Falls Pflichtfeld
+                ratings: {},  // Falls nötig
             },
             passengers: []
         },
@@ -114,10 +141,17 @@ export default function Profile() {
             driver: {
                 id: 'otherDriver1',
                 firstName: 'Max',
-                lastName: 'Mustermann',
+                lastName: 'Musermann',
                 picture: '/placeholder.svg',
-                rating: 4.2,
-                numRides: 30
+                rating: 4.5,
+                numRides: 50,
+                hasRated: false,
+                isRated: false,
+                email: "",
+                phone: "",
+                birthdate: "",
+                additionalNote: "",
+                ratings: {},
             },
             passengers: []
         },
@@ -137,7 +171,13 @@ export default function Profile() {
                 picture: '/placeholder.svg',
                 rating: 4.5,
                 numRides: 50,
-                hasRated: false
+                hasRated: false,
+                isRated: false,
+                email: "",
+                phone: "",
+                birthdate: "",
+                additionalNote: "",
+                ratings: {},
             },
             passengers: [
                 {
@@ -174,7 +214,13 @@ export default function Profile() {
                 picture: '/placeholder.svg',
                 rating: 4.8,
                 numRides: 75,
-                hasRated: true
+                hasRated: false,
+                isRated: false,
+                email: "",
+                phone: "",
+                birthdate: "",
+                additionalNote: "",
+                ratings: {},
             },
             passengers: [
                 {
@@ -195,7 +241,7 @@ export default function Profile() {
         },
     ])
 
-    const [offeredFreight, setOfferedFreight] = useState([
+    const [offeredFreight] = useState([
         {
             id: '6',
             from: 'Köln',
@@ -210,7 +256,14 @@ export default function Profile() {
                 lastName: 'Doe',
                 picture: '/placeholder.svg',
                 rating: 4.5,
-                numRides: 50
+                numRides: 50,
+                hasRated: false,
+                isRated: false,
+                email: "",
+                phone: "",
+                birthdate: "",
+                additionalNote: "",
+                ratings: {},
             }
         },
     ])
@@ -262,19 +315,21 @@ export default function Profile() {
                                     </div>
                                     <div className="space-y-4">
                                         {showOfferedRides
-                                            ? [...activeRides.filter(ride => ride.isOffered), ...offeredFreight].map(ride => (
-                                                <RideStatus
-                                                    key={ride.id}
-                                                    rideId={ride.id}
-                                                    isOffered={true}
-                                                    type={ride.type}
-                                                    onRideComplete={handleRideComplete}
-                                                    from={ride.from}
-                                                    to={ride.to}
-                                                    driver={ride.driver}
-                                                    passengers={ride.passengers}
-                                                />
-                                            ))
+                                            ? [...activeRides.filter(ride => ride.isOffered), ...offeredFreight]
+                                                .filter(ride => ride.type === "ride") // 🔥 Filter direkt in map()
+                                                .map(ride => (
+                                                    <RideStatus
+                                                        key={ride.id}
+                                                        rideId={ride.id}
+                                                        isOffered={true}
+                                                        type={ride.type}
+                                                        onRideComplete={handleRideComplete}
+                                                        from={ride.from}
+                                                        to={ride.to}
+                                                        driver={ride.driver}
+                                                        passengers={ride.passengers ?? []}
+                                                    />
+                                                ))
                                             : activeRides.filter(ride => !ride.isOffered).map(ride => (
                                                 <RideStatus
                                                     key={ride.id}
@@ -294,10 +349,19 @@ export default function Profile() {
                                         <span className="text-small font-medium">Fahrtenhistorie</span>
                                     </div>
                                     <RideHistory
-                                            rides={completedRides}
-                                            isDriver={true}
-                                            currentUserId="currentUserId"
-                                        />
+                                        rides={completedRides.map(ride => ({
+                                            ...ride,
+                                            passengers: ride.passengers ?? [],
+                                            ratings: Object.fromEntries(
+                                                Object.entries(ride.ratings ?? {}).map(([key, value]) => [
+                                                    key,
+                                                    Array.isArray(value) ? value : []
+                                                ])
+                                            )
+                                        }))}
+                                        isDriver={true}
+                                        currentUserId="currentUserId"
+                                    />
                                 </TabsContent>
                             </Tabs>
                         </CardContent>

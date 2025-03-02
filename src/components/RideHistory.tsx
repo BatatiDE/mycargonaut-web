@@ -23,17 +23,18 @@ interface RideHistoryItem {
     from: string
     to: string
     date: string
+    type: 'ride' | 'freight'
     driver: User
     passengers: Participant[]
-    type: 'ride' | 'freight'
     isOffered: boolean
     isRated: boolean
-    ratings: { [participantId: string]: number[] }
+    ratings: { [participantId: string]: number[]}
 }
 
 interface RideHistoryProps {
-    rides: RideHistoryItem[]
-    currentUserId: string
+    rides: RideHistoryItem[];
+    currentUserId: string;
+    isDriver?: boolean; // Falls optional
 }
 
 export default function RideHistory({ rides, currentUserId }: RideHistoryProps) {
