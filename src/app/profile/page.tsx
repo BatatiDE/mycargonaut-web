@@ -335,7 +335,7 @@ export default function Profile() {
                                                         from={ride.from}
                                                         to={ride.to}
                                                         driver={ride.driver}
-                                                        passengers={ride.passengers ?? []}
+                                                        passengers={ride.passengers?.map(p => ({ ...p, id: String(p.id) })) ?? []}
                                                     />
                                                 ))
                                             : activeRides.filter(ride => !ride.isOffered).map(ride => (

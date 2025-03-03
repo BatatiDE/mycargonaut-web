@@ -36,6 +36,7 @@ async function apiFetch(endpoint: string, options: RequestInit = {}) {
 export const authApi = {
     register: async (userData: any) => {
         try {
+            // const response = await fetch(`${API_URL}/register`, {
             const response = await fetch(`${API_URL}/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -47,7 +48,7 @@ export const authApi = {
                 const errorData = await response.text();
                 throw new Error(errorData || "Registrierung fehlgeschlagen");
             }
-
+            window.location.href = "/login";  // User zum Login umleiten
             return await response.json();
         } catch (error) {
             console.error("Fehler bei der Registrierung:", error);
@@ -69,7 +70,8 @@ export const authApi = {
             }
 
             const data = await response.json();
-            localStorage.setItem("authToken", data.token);  // 🔥 Token speichern!
+            localStorage.setItem("authToken", data.token);// 🔥 Token speichern!
+            window.location.href = "/";  // User zum Login umleiten
             return data;
         } catch (error) {
             console.error("Fehler beim Login:", error);
