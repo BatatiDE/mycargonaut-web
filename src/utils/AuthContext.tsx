@@ -12,7 +12,8 @@ import {useRouter} from "next/navigation"; // Use the existing authApi
 interface User {
     id: string;
     email?: string;
-    name?: string;
+    firstName?: string;
+    lastName?: string;
     role?: string;
 }
 
@@ -53,12 +54,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // Login function
     const login = async (email: string, password: string) => {
-        const { token, user } = await authApi.login(email, password); // Übergibt die Argumente einzeln
+        const { token, user } = await authApi.login(email, password);
+
+        // 🔥 Sicherstellen, dass ID eine Zahl ist
+        const parsedUser = { ...user, id: Number(user.id) };
+
         setToken(token);
-        setUser(user);
+        setUser(parsedUser);
 
         localStorage.setItem("authToken", token);
-        localStorage.setItem("authUser", JSON.stringify(user));
+        localStorage.setItem("authUser", JSON.stringify(parsedUser));
     };
 
 

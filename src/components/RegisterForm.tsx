@@ -1,25 +1,31 @@
 'use client'
 
-import { useState } from 'react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import { useRouter } from 'next/navigation'
-import { authApi } from '@/utils/api'
-import {AlertDialog, AlertDialogDescription, AlertDialogTrigger} from "@/components/ui/alert-dialog"
-import Link from "next/link";
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useRouter } from 'next/navigation';
+import { authApi } from '@/utils/api';
+import { AlertDialog, AlertDialogDescription, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import Link from 'next/link';
 
 export default function RegisterForm() {
-    const [isOver18, setIsOver18] = useState(false)
-    const [firstName, setFirstName] = useState('')
-    const [lastName, setLastName] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [confirmPassword, setConfirmPassword] = useState('') // New state for password confirmation
-    const [birthDate, setBirthDate] = useState('')
-    const [error, setError] = useState<string | null>(null) // New state for error handling
-    const router = useRouter()
+    const [isOver18, setIsOver18] = useState(false);
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [birthDate, setBirthDate] = useState('');
+    const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
+
+    // Setzt das aktuelle Datum erst nach dem ersten Render
+    const [currentDate, setCurrentDate] = useState<string | null>(null);
+    useEffect(() => {
+        setCurrentDate(new Date().toISOString().split('T')[0]); // Nur das Datum (YYYY-MM-DD)
+    }, []);
 
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -37,21 +43,20 @@ export default function RegisterForm() {
 
         try {
             const userData = {
+                // name: `${firstName} ${lastName}`, // 🛠 Backend erwartet nur "name"
                 firstName,
                 lastName,
                 email,
                 password,
-                birthdate: birthDate, // Direkt als String senden
+                birthdate: birthDate ? new Date(birthDate).toISOString().split("T")[0] : null // Format in YYYY-MM-DD umwandeln
             };
+            const response = await authApi.register(userData);
+            console.log("Registrierter User:", response); // Hier prüfen, ob `id` zurückkommt
+            router.push('/login');
 
-            console.log("Sende Registrierungsdaten:", userData);
-            // const data = await authApi.register(userData);
-            await authApi.register(userData);
-            console.log("Registrierung erfolgreich:", userData);
-            router.push('/login'); // Weiterleitung nach Login
-        } catch (error: any) {
-            console.error("Registrierung fehlgeschlagen:", error);
-            setError(error.response?.data?.message || "Registrierung fehlgeschlagen. Bitte versuche es erneut.");
+        } // @ts-ignore
+        catch (error: any) {
+            setError(error.response?.data?.message || 'Registrierung fehlgeschlagen.');
         }
     };
 

@@ -43,13 +43,13 @@ export default function Profile() {
                 picture: '/placeholder.svg',
                 rating: 4.5,
                 numRides: 50,
-                hasRated: false,  // Hinzugefügt
-                isRated: false,  // Hinzugefügt
-                email: "",  // Falls Pflichtfeld
-                phone: "",  // Falls Pflichtfeld
-                birthdate: "",  // Falls Pflichtfeld
-                additionalNote: "",  // Falls Pflichtfeld
-                ratings: {},  // Falls nötig
+                hasRated: false,
+                isRated: false,
+                email: "",
+                phone: "",
+                birthdate: "",
+                additionalNote: "",
+                ratings: {},
             },
             passengers: [
                 {
@@ -58,8 +58,8 @@ export default function Profile() {
                     picture: '/placeholder.svg',
                     rating: 4.2,
                     numRides: 15,
-                    hasRated: false,  // Hinzugefügt
-                    isRated: false,  // Hinzugefügt
+                    hasRated: false,
+                    isRated: false,
                 },
                 {
                     id: 'passenger2',
@@ -67,8 +67,8 @@ export default function Profile() {
                     picture: '/placeholder.svg',
                     rating: 4.7,
                     numRides: 30,
-                    hasRated: false,  // Hinzugefügt
-                    isRated: false,  // Hinzugefügt
+                    hasRated: false,
+                    isRated: false,
                 }
             ]
         },
@@ -153,7 +153,15 @@ export default function Profile() {
                 additionalNote: "",
                 ratings: {},
             },
-            passengers: []
+            passengers: [
+                {
+                    id: 3,
+                    name: 'Lisa Wagner',
+                    picture: '/placeholder.svg',
+                    rating: 4.8,
+                    numRides: 25
+                }
+            ]
         },
     ])
 

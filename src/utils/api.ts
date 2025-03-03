@@ -4,36 +4,39 @@ const API_URL = 'http://localhost:8080/api'; // Replace with your backend URL
 
 // Generic Fetch Helper
 async function apiFetch(endpoint: string, options: RequestInit = {}) {
-    const token = localStorage.getItem("authToken"); // Fetch token dynamically
+    const token = localStorage.getItem("authToken");
+
+    if (!token) {
+        console.warn("Kein Token gefunden. User wird ausgeloggt.");
+        window.location.href = "/login"; // Automatisches Logout
+        throw new Error("Unauthorized");
+    }
 
     const response = await fetch(`${API_URL}${endpoint}`, {
         headers: {
             'Content-Type': 'application/json',
-            ...(token && { Authorization: `Bearer ${token}` }),
+            Authorization: `Bearer ${token}`,
         },
         ...options,
     });
 
     if (!response.ok) {
+        if (response.status === 401) {  // Falls Token abgelaufen oder ungültig
+            console.warn("Token ungültig. User wird ausgeloggt.");
+            localStorage.removeItem("authToken");
+            window.location.href = "/login";
+        }
         throw new Error(`Error: ${response.status}`);
     }
 
-    const contentType = response.headers.get('Content-Type');
-    if (contentType && contentType.includes('application/json')) {
-        return await response.json();
-    } else if (contentType && contentType.includes('text/plain')) {
-        return await response.text();
-    } else {
-        throw new Error('Unsupported response type');
-    }
+    return response.json();
 }
-
 
 // Authentication APIs
 export const authApi = {
     register: async (userData: any) => {
         try {
-            const response = await fetch("/api/register", {
+            const response = await fetch(`${API_URL}/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(userData),
@@ -54,7 +57,7 @@ export const authApi = {
 
     login: async (email: string, password: string) => {
         try {
-            const response = await fetch("/api/login", {
+            const response = await fetch(`${API_URL}/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
@@ -65,11 +68,17 @@ export const authApi = {
                 throw new Error(errorData || "Login fehlgeschlagen");
             }
 
-            return await response.json();
+            const data = await response.json();
+            localStorage.setItem("authToken", data.token);  // 🔥 Token speichern!
+            return data;
         } catch (error) {
             console.error("Fehler beim Login:", error);
             throw error;
         }
+    },
+    logout: () => {
+        localStorage.removeItem("authToken");
+        window.location.href = "/login";  // User zum Login umleiten
     },
     resetPassword: async (email: string) =>
         apiFetch('/reset-password', {
@@ -117,18 +126,33 @@ export const trackingApi = {
 
 // Profile APIs
 export const profileApi = {
-    fetchProfile: async (): Promise<User> =>
-        fetch(`${API_URL}/users/me`, {
+    fetchProfile: async (): Promise<User> => {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+            console.warn("Kein Token gefunden. User wird ausgeloggt.");
+            window.location.href = "/login";
+            throw new Error("Unauthorized");
+        }
+
+        const response = await fetch(`${API_URL}/users/me`, {
             method: "GET",
             headers: {
-                Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
             },
-        }).then((response) => {
-            if (!response.ok) {
-                throw new Error(`Error: ${response.status}`);
+        });
+
+        if (!response.ok) {
+            if (response.status === 401) {
+                console.warn("Token ungültig. User wird ausgeloggt.");
+                localStorage.removeItem("authToken");
+                window.location.href = "/login";
             }
-            return response.json();
-        }),
+            throw new Error(`Error: ${response.status}`);
+        }
+
+        return response.json();
+    },
 
     updateProfile: async (data: Partial<User>): Promise<User> => {
         const response = await fetch(`${API_URL}/users/me`, {
