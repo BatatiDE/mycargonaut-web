@@ -1,8 +1,7 @@
 import LocationMapClient from "@/components/LocationMapClient";
 
-
 const LocationMap = (props: unknown) => {
-    return <LocationMapClient {...props} />;
+  return <LocationMapClient {...props} />;
 };
 
 export default LocationMap;

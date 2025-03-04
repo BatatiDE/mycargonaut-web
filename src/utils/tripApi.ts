@@ -1,47 +1,50 @@
 /*import {Trip} from "@/utils/types";*/
-import {Trip} from "@/types/trip";
+import { Trip } from "@/types/trip";
 
 const TRIP_GRAPHQL_ENDPOINT = "http://localhost:8080/graphql"; // Ensure correct backend URL
 
 // Generic GraphQL Fetch Helper for Trips
 async function graphQLFetch(query: string, variables?: Record<string, any>) {
-    const token = localStorage.getItem("authToken");
+  const token = localStorage.getItem("authToken");
 
-    if (!token) {
-        console.error("No auth token found in localStorage");
-        throw new Error("Please Login");
-    }
+  if (!token) {
+    console.error("No auth token found in localStorage");
+    throw new Error("Please Login");
+  }
 
-    console.log("Sending request with auth token:", token);
+  console.log("Sending request with auth token:", token);
 
-    const response = await fetch(TRIP_GRAPHQL_ENDPOINT, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ query, variables }),
-    });
+  const response = await fetch(TRIP_GRAPHQL_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ query, variables }),
+  });
 
-    if (!response.ok) {
-        const errorBody = await response.text();
-        console.error(`GraphQL request failed: ${response.status} ${response.statusText}`, errorBody);
-        throw new Error(`Error: ${response.status}`);
-    }
+  if (!response.ok) {
+    const errorBody = await response.text();
+    console.error(
+      `GraphQL request failed: ${response.status} ${response.statusText}`,
+      errorBody
+    );
+    throw new Error(`Error: ${response.status}`);
+  }
 
-    const result = await response.json();
-    if (result.errors) {
-        console.error("GraphQL errors:", result.errors);
-        throw new Error(result.errors[0]?.message || "GraphQL query failed.");
-    }
+  const result = await response.json();
+  if (result.errors) {
+    console.error("GraphQL errors:", result.errors);
+    throw new Error(result.errors[0]?.message || "GraphQL query failed.");
+  }
 
-    return result.data;
+  return result.data;
 }
 
 // Trip API Functions
 export const tripApi = {
-    getTrips: async (): Promise<Trip[]> => {
-        const query = `
+  getTrips: async (): Promise<Trip[]> => {
+    const query = `
             query {
                 getTrips {
                     id
@@ -65,26 +68,26 @@ export const tripApi = {
                 }
             }
         `;
-        const data = await graphQLFetch(query);
-        return data.getTrips;
-    },
+    const data = await graphQLFetch(query);
+    return data.getTrips;
+  },
 
-    // Additional functions (e.g., addTrip, bookTrip) can be added here
-    addTrip: async (input: {
-        driverId: number;
-        startingPoint: string;
-        destinationPoint: string;
-        date: string;
-        time: string;
-        price: number;
-        availableSeats: number;
-        freightSpace: number;
-        isFreightRide: boolean;
-        vehicle?: string;
-        notes?: string;
-        type: "OFFER" | "REQUEST";
-    }) => {
-        const query = `
+  // Additional functions (e.g., addTrip, bookTrip) can be added here
+  addTrip: async (input: {
+    driverId: number;
+    startingPoint: string;
+    destinationPoint: string;
+    date: string;
+    time: string;
+    price: number;
+    availableSeats: number;
+    freightSpace: number;
+    isFreightRide: boolean;
+    vehicle?: string;
+    notes?: string;
+    type: "OFFER" | "REQUEST";
+  }) => {
+    const query = `
             mutation AddTrip($input: AddTripInput!) {
                 addTrip(input: $input) {
                     id
@@ -103,29 +106,32 @@ export const tripApi = {
             }
         `;
 
-        const variables = {
-            input: {
-                ...input,
-                driverId: String(input.driverId), // Convert to string as the schema expects ID!
-                price: Number(input.price),
-                availableSeats: Number(input.availableSeats),
-                freightSpace: Number(input.freightSpace),
-            }
-        };
+    const variables = {
+      input: {
+        ...input,
+        driverId: String(input.driverId), // Convert to string as the schema expects ID!
+        price: Number(input.price),
+        availableSeats: Number(input.availableSeats),
+        freightSpace: Number(input.freightSpace),
+      },
+    };
 
-        try {
-            console.log('Sending GraphQL variables:', JSON.stringify(variables, null, 2));
-            const data = await graphQLFetch(query, variables);
-            console.log('GraphQL response:', JSON.stringify(data, null, 2));
-            return data.addTrip;
-        } catch (error) {
-            console.error('Error in addTrip:', error);
-            throw error;
-        }
-    },
+    try {
+      console.log(
+        "Sending GraphQL variables:",
+        JSON.stringify(variables, null, 2)
+      );
+      const data = await graphQLFetch(query, variables);
+      console.log("GraphQL response:", JSON.stringify(data, null, 2));
+      return data.addTrip;
+    } catch (error) {
+      console.error("Error in addTrip:", error);
+      throw error;
+    }
+  },
 
-    updateUserRole: async (userId: number, role: string) => {
-        const query = `
+  updateUserRole: async (userId: number, role: string) => {
+    const query = `
         mutation {
             updateUserRole(userId: ${userId}, role: "${role}") {
                 id
@@ -135,11 +141,11 @@ export const tripApi = {
             }
         }
     `;
-        return await graphQLFetch(query);
-    },
-    // Bookings
-    bookTrip: async (tripId: string) => {
-        const mutation = `
+    return await graphQLFetch(query);
+  },
+  // Bookings
+  bookTrip: async (tripId: string) => {
+    const mutation = `
         mutation {
             bookTrip(tripId: "${tripId}") {
                 success
@@ -152,14 +158,13 @@ export const tripApi = {
         }
     `;
 
-        const data = await graphQLFetch(mutation);
-        return data.bookTrip;
-    },
+    const data = await graphQLFetch(mutation);
+    return data.bookTrip;
+  },
 
-
-    // Confirmation
-    confirmBooking: async (bookingId: string) => {
-        const mutation = `
+  // Confirmation
+  confirmBooking: async (bookingId: string) => {
+    const mutation = `
         mutation {
             confirmBooking(bookingId: "${bookingId}") {
                 success
@@ -171,13 +176,12 @@ export const tripApi = {
             }
         }
     `;
-        const data = await graphQLFetch(mutation);
-        return data.confirmBooking;
-    },
+    const data = await graphQLFetch(mutation);
+    return data.confirmBooking;
+  },
 
-
-    startOngoingTrip: async (tripId: string) => {
-        const mutation = `
+  startOngoingTrip: async (tripId: string) => {
+    const mutation = `
             mutation {
                 startOngoing(tripId: ${tripId}) {
                     id
@@ -185,11 +189,11 @@ export const tripApi = {
                 }
             }
         `;
-        const data = await graphQLFetch(mutation);
-        return data.startOngoing;
-    },
-    completeTrip: async (tripId: string) => {
-        const mutation = `
+    const data = await graphQLFetch(mutation);
+    return data.startOngoing;
+  },
+  completeTrip: async (tripId: string) => {
+    const mutation = `
         mutation {
             completeTrip(tripId: "${tripId}") {
                 id
@@ -197,12 +201,12 @@ export const tripApi = {
             }
         }
     `;
-        const data = await graphQLFetch(mutation);
-        return data.completeTrip;
-    },
+    const data = await graphQLFetch(mutation);
+    return data.completeTrip;
+  },
 
-    cancelBooking: async (bookingId: string) => {
-        const query = `
+  cancelBooking: async (bookingId: string) => {
+    const query = `
         mutation CancelBooking($bookingId: ID!) {
             cancelBooking(bookingId: $bookingId) {
                 success
@@ -210,9 +214,7 @@ export const tripApi = {
             }
         }
     `;
-        const data = await graphQLFetch(query);
-        return data.cancelBooking;
-    },
-
-
+    const data = await graphQLFetch(query);
+    return data.cancelBooking;
+  },
 };
