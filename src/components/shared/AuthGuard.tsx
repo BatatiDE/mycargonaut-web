@@ -1,17 +1,32 @@
-import React, { useEffect } from 'react';
-import { useRouter } from 'next/router';
+"use client";
+
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
 const AuthGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
-    useEffect(() => {
-        const token = localStorage.getItem('authToken');
-        if (!token) {
-            router.push('/login');
-        }
-    }, [router]);
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      setIsAuthenticated(true);
+    } else {
+      router.push("/login");
+    }
+    setIsLoading(false);
+  }, [router]);
 
-    return <>{children}</>;
+  if (isLoading) {
+    return <div>Loading...</div>; // Show a loader while checking authentication
+  }
+
+  if (!isAuthenticated) {
+    return null; // Ensure no content renders before redirect
+  }
+
+  return <>{children}</>;
 };
 
 export default AuthGuard;

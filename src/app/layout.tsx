@@ -1,44 +1,48 @@
-import type { Metadata } from "next";
-import localFont from "next/font/local";
-import Navbar from "@/components/Navbar"; // Import your Navbar component
-import "./globals.css";
-import { AuthProvider } from "@/utils/AuthContext"; // Import AuthProvider for authentication context
+import type { Metadata, Viewport } from "next";
+import { Inter } from "next/font/google";
+import { Suspense } from "react";
 
-const geistSans = localFont({
-    src: "./fonts/GeistVF.woff",
-    variable: "--font-geist-sans",
-    weight: "100 900",
-});
-const geistMono = localFont({
-    src: "./fonts/GeistMonoVF.woff",
-    variable: "--font-geist-mono",
-    weight: "100 900",
-});
+import ErrorBoundary from "@/components/ErrorBoundary";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import { AuthProvider } from "@/utils/AuthContext";
+
+import "./globals.css";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "MyCargonaut",
-    description: "A platform for ride and freight sharing",
+  title: "MyCargonaut",
+  description: "Eine Plattform für Mitfahrgelegenheiten und Frachttransporte",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1.0,
+  maximumScale: 1.0,
 };
 
 export default function RootLayout({
-                                       children,
-                                   }: Readonly<{
-    children: React.ReactNode;
+  children,
+}: Readonly<{
+  children: React.ReactNode;
 }>) {
-    return (
-        <html lang="en">
-        <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-        {/* Wrap the application with AuthProvider */}
-        <AuthProvider>
-            {/* Add the Navbar for consistent navigation */}
-            <Navbar />
-
-            {/* Main page content */}
-            <main>{children}</main>
-        </AuthProvider>
-        </body>
-        </html>
-    );
+  return (
+    <html lang="de">
+      <body className={inter.className}>
+        <div className="flex min-h-screen flex-col">
+          <AuthProvider>
+            <ErrorBoundary>
+              <Suspense fallback={<LoadingSpinner />}>
+                <Navbar />
+                <main className="flex-grow">{children}</main>
+                <Footer />
+              </Suspense>
+            </ErrorBoundary>
+          </AuthProvider>
+        </div>
+      </body>
+    </html>
+  );
 }

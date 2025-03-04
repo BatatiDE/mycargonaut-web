@@ -1,103 +1,96 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import {
-    createContext,
-    useContext,
-    useState,
-    useEffect,
-    ReactNode,
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
 } from "react";
 
-interface User {
-    id: string;
-    email: string;
-    name?: string;
-}
+import { User } from "@/types/user";
+import { authApi, profileApi } from "@/utils/api";
+
+// Use the existing authApi
 
 interface AuthContextType {
-    token: string | null;
-    user: User | null;
-    setToken: (token: string | null) => void;
-    setUser: (user: User | null) => void;
-    login: (email: string, password: string) => Promise<void>;
-    logout: () => void; // Add logout method
+  token: string | null;
+  user: User | null;
+  setToken: (token: string | null) => void;
+  setUser: (user: User | null) => void;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
+  refreshUser: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType>({
-    token: null,
-    user: null,
-    setToken: () => {},
-    setUser: () => {},
-    login: async () => {},
-    logout: () => {}, // Default empty logout implementation
-});
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error("useAuth must be used within an AuthProvider");
-    }
-    return context;
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [token, setToken] = useState<string | null>(null);
-    const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter(); // Initialize the router
 
-    useEffect(() => {
-        const storedToken = localStorage.getItem("authToken");
-        const storedUser = localStorage.getItem("authUser");
+  // Load token and user from localStorage on app start
+  useEffect(() => {
+    const storedToken = localStorage.getItem("authToken");
+    const storedUser = localStorage.getItem("authUser");
 
-        if (storedToken) {
-            setToken(storedToken);
-        }
+    if (storedToken) setToken(storedToken);
+    if (storedUser) setUser(JSON.parse(storedUser));
+  }, []);
 
-        if (storedUser && storedUser !== "undefined") {
-            try {
-                setUser(JSON.parse(storedUser) as User);
-            } catch (error) {
-                console.error("Error parsing stored user data:", error);
-                setUser(null);
-            }
-        } else {
-            setUser(null);
-        }
-    }, []);
+  // Login function
+  const login = async (email: string, password: string) => {
+    const { token, user } = await authApi.login({ email, password }); // Use authApi.login
+    setToken(token);
+    setUser(user);
 
-    const login = async (email: string, password: string) => {
-        try {
-            const response = await fetch("http://localhost:8080/api/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-            });
+    localStorage.setItem("authToken", token);
+    localStorage.setItem("authUser", JSON.stringify(user));
+  };
 
-            if (!response.ok) {
-                throw new Error(`Login failed: ${response.status}`);
-            }
+  // Logout function
+  const logout = () => {
+    setToken(null);
+    setUser(null);
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("authUser");
+    router.push("/login"); // Redirect to the login page
+  };
 
-            const { token, user } = await response.json();
-            setToken(token);
-            setUser(user);
+  // Refresh user profile
+  const refreshUser = async () => {
+    try {
+      const updatedUser = await profileApi.fetchProfile();
+      setUser(updatedUser);
+      localStorage.setItem("authUser", JSON.stringify(updatedUser));
+    } catch (error) {
+      console.error("Failed to refresh user data:", error);
+    }
+  };
 
-            localStorage.setItem("authToken", token);
-            localStorage.setItem("authUser", JSON.stringify(user));
-        } catch (error) {
-            console.error("Login error:", error);
-            throw error;
-        }
-    };
-
-    const logout = () => {
-        setToken(null);
-        setUser(null);
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("authUser");
-    };
-
-    return (
-        <AuthContext.Provider value={{ token, user, setToken, setUser, login, logout }}>
-            {children}
-        </AuthContext.Provider>
-    );
+  return (
+    <AuthContext.Provider
+      value={{
+        token,
+        user,
+        setToken,
+        setUser,
+        login,
+        logout,
+        refreshUser,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };

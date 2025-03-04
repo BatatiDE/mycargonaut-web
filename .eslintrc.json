@@ -1,4 +1,42 @@
-
 {
-  "extends": ["next/core-web-vitals", "next/typescript"]
+  "extends": [
+    "next/core-web-vitals",
+    "next/typescript",
+    "prettier"
+  ],
+  "plugins": [
+    "check-file"
+  ],
+  "rules": {
+    "prefer-arrow-callback": [
+      "error"
+    ],
+    "prefer-template": [
+      "error"
+    ],
+    "semi": [
+      "error"
+    ],
+    "quotes": [
+      "error",
+      "double"
+    ],
+    "check-file/filename-naming-convention": [
+      "error",
+      {
+        "**/app/**/page.tsx": "KEBAB_CASE", // pages.tsx in kebab-case
+        "**/components/*.tsx": "PASCAL_CASE", // Komponenten in PascalCase
+        "**/components/ui/**/*.tsx": "KEBAB_CASE" // ShadCN-Komponenten in PascalCase
+      },
+      {
+        "ignoreMiddleExtensions": true // Erlaubt Dateien wie *.test.tsx
+      }
+    ],
+    "check-file/folder-naming-convention": [
+      "error",
+      {
+        "src/app/**": "KEBAB_CASE" // Ordner in kebab-case
+      }
+    ]
+  }
 }
