@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-
 import ProfileForm from "@/components/ProfileForm";
 import RideHistory from "@/components/RideHistory";
 import RideStatus from "@/components/RideStatus";
@@ -11,301 +10,160 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Profile() {
-  const [activeRides, setActiveRides] = useState([
-    {
-      id: 1,
-      from: "Berlin",
-      to: "München",
-      date: "2023-06-15",
-      status: "Upcoming",
-      type: "ride" as const,
-      isOffered: true,
-      driver: {
-        id: 123,
-        firstName: "John",
-        lastName: "Doe",
-        picture: "/placeholder.svg",
-        rating: 4.5,
-        numRides: 50,
-        hasRated: false,
-      },
-      passengers: [
+    const [activeRides, setActiveRides] = useState([
         {
-          id: 2,
-          name: "Anna Müller",
-          picture: "/placeholder.svg",
-          rating: 4.2,
-          numRides: 15,
+            id: "1",
+            from: "Berlin",
+            to: "München",
+            date: "2023-06-15",
+            status: "Upcoming",
+            type: "ride" as const,
+            isOffered: true,
+            driver: {
+                id: "123",
+                firstName: "John",
+                lastName: "Doe",
+                picture: "/placeholder.svg",
+                rating: 4.5,
+                numRides: 50,
+                numPassengers: 120,
+                weightCarried: 300,
+                distanceTraveled: 5000,
+                languages: ["Deutsch", "Englisch"],
+                isSmoker: false,
+                hasRated: false,
+                isRated: false,
+                email: "john.doe@example.com",
+                phone: "123456789",
+                birthdate: "1985-05-15",
+                additionalNote: "Pünktlich und zuverlässig",
+                ratings: {},
+            },
+            passengers: [
+                {
+                    id: "2",
+                    name: "Anna Müller",
+                    picture: "/placeholder.svg",
+                    rating: 4.2,
+                    numRides: 15,
+                    hasRated: false,
+                    isRated: false,
+                },
+                {
+                    id: "3",
+                    name: "Max Schmidt",
+                    picture: "/placeholder.svg",
+                    rating: 4.7,
+                    numRides: 30,
+                    hasRated: false,
+                    isRated: false,
+                },
+            ],
         },
         {
-          id: 3,
-          name: "Max Schmidt",
-          picture: "/placeholder.svg",
-          rating: 4.7,
-          numRides: 30,
+            id: "7",
+            from: "Stuttgart",
+            to: "Nürnberg",
+            date: "2023-06-22",
+            status: "Upcoming",
+            type: "ride" as const,
+            isOffered: true,
+            driver: {
+                id: "124",
+                firstName: "Lisa",
+                lastName: "Weber",
+                picture: "/placeholder.svg",
+                rating: 4.8,
+                numRides: 75,
+                numPassengers: 200,
+                weightCarried: 500,
+                distanceTraveled: 8000,
+                languages: ["Deutsch", "Französisch"],
+                isSmoker: false,
+                hasRated: false,
+                isRated: false,
+                email: "lisa.weber@example.com",
+                phone: "987654321",
+                birthdate: "1990-08-20",
+                additionalNote: "Langjährige Erfahrung",
+                ratings: {},
+            },
+            passengers: [],
         },
-      ],
-    },
-    {
-      id: 7,
-      from: "Stuttgart",
-      to: "Nürnberg",
-      date: "2023-06-22",
-      status: "Upcoming",
-      type: "ride" as const,
-      isOffered: true,
-      driver: {
-        id: 124,
-        firstName: "John",
-        lastName: "Doe",
-        picture: "/placeholder.svg",
-        rating: 4.5,
-        numRides: 50,
-        hasRated: false,
-      },
-      passengers: [
-        {
-          id: 4,
-          name: "Lisa Wagner",
-          picture: "/placeholder.svg",
-          rating: 4.8,
-          numRides: 25,
-        },
-      ],
-    },
-    {
-      id: 5,
-      from: "Hamburg",
-      to: "Frankfurt",
-      date: "2023-06-20",
-      status: "In Progress",
-      type: "ride" as const,
-      isOffered: true,
-      driver: {
-        id: 125,
-        firstName: "John",
-        lastName: "Doe",
-        picture: "/placeholder.svg",
-        rating: 4.5,
-        numRides: 50,
-        hasRated: false,
-      },
-      passengers: [],
-    },
-    {
-      id: 6,
-      from: "Köln",
-      to: "Dresden",
-      date: "2023-06-25",
-      status: "Upcoming",
-      type: "ride" as const,
-      isOffered: false,
-      driver: {
-        id: 127,
-        firstName: "Max",
-        lastName: "Mustermann",
-        picture: "/placeholder.svg",
-        rating: 4.2,
-        numRides: 30,
-        hasRated: false,
-      },
-      passengers: [],
-    },
-  ]);
+    ]);
 
-  const [completedRides, setCompletedRides] = useState([
-    {
-      id: 8,
-      from: "Köln",
-      to: "Dresden",
-      date: "2023-06-10",
-      type: "ride" as const,
-      driver: {
-        id: 121,
-        firstName: "John",
-        lastName: "Doe",
-        picture: "/placeholder.svg",
-        rating: 4.5,
-        numRides: 50,
-        hasRated: false,
-      },
-      passengers: [
+    const [completedRides, setCompletedRides] = useState([
         {
-          id: 3,
-          name: "Anna Müller",
-          picture: "/placeholder.svg",
-          rating: 4.2,
-          numRides: 15,
-          hasRated: false,
+            id: "8",
+            from: "Köln",
+            to: "Dresden",
+            date: "2023-06-10",
+            type: "ride" as const,
+            driver: {
+                id: "121",
+                firstName: "Michael",
+                lastName: "Fischer",
+                picture: "/placeholder.svg",
+                rating: 4.6,
+                numRides: 90,
+                numPassengers: 150,
+                weightCarried: 400,
+                distanceTraveled: 7000,
+                languages: ["Deutsch", "Spanisch"],
+                isSmoker: true,
+                hasRated: false,
+                isRated: false,
+                email: "michael.fischer@example.com",
+                phone: "1122334455",
+                birthdate: "1980-12-12",
+                additionalNote: "Sehr freundlich",
+                ratings: {},
+            },
+            passengers: [],
+            isOffered: true,
+            isRated: false,
+            ratings: {},
         },
-        {
-          id: 5,
-          name: "Max Schulz",
-          picture: "/placeholder.svg",
-          rating: 4.7,
-          numRides: 30,
-          hasRated: true,
-        },
-      ],
-      isOffered: true,
-      isRated: false,
-      ratings: {},
-    },
-    {
-      id: "5",
-      from: "München",
-      to: "Berlin",
-      date: "2023-06-05",
-      type: "ride" as const,
-      driver: {
-        id: "otherDriver2",
-        firstName: "Lisa",
-        lastName: "Weber",
-        picture: "/placeholder.svg",
-        rating: 4.8,
-        numRides: 75,
-        hasRated: true,
-      },
-      passengers: [
-        {
-          id: "currentUserId",
-          name: "John Doe",
-          picture: "/placeholder.svg",
-          rating: 4.5,
-          numRides: 50,
-          hasRated: true,
-        },
-      ],
-      isOffered: false,
-      isRated: true,
-      ratings: {
-        otherDriver2: [4, 5, 5],
-        currentUserId: [5, 4, 5],
-      },
-    },
-  ]);
+    ]);
 
-  const [offeredFreight, setOfferedFreight] = useState([
-    {
-      id: "6",
-      from: "Köln",
-      to: "Stuttgart",
-      date: "2023-06-18",
-      status: "Upcoming",
-      type: "freight" as const,
-      isOffered: true,
-      driver: {
-        id: "currentUserId",
-        firstName: "John",
-        lastName: "Doe",
-        picture: "/placeholder.svg",
-        rating: 4.5,
-        numRides: 50,
-        hasRated: false,
-      },
-    },
-  ]);
-
-  const [showOfferedRides, setShowOfferedRides] = useState(true);
-
-  const handleRideComplete = (rideId: string) => {
-    const completedRide = activeRides.find((ride) => ride.id === rideId);
-    if (completedRide) {
-      setActiveRides(activeRides.filter((ride) => ride.id !== rideId));
-      setCompletedRides([
-        ...completedRides,
-        {
-          ...completedRide,
-          passengers: [],
-          isRated: false,
-          ratings: {},
-        },
-      ]);
-    }
-  };
-
-  return (
-    <AuthGuard>
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <ProfileForm />
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle>Dashboard</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="active">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="active">Aktive Fahrten</TabsTrigger>
-                  <TabsTrigger value="history">Fahrtenhistorie</TabsTrigger>
-                </TabsList>
-                <TabsContent value="active">
-                  <div className="my-4 flex items-center justify-between">
-                    <span className="text-small font-medium">
-                      {showOfferedRides
-                        ? "Angebotene Fahrten"
-                        : "Gebuchte Fahrten"}
-                    </span>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm">Gebucht</span>
-                      <Switch
-                        checked={showOfferedRides}
-                        onCheckedChange={setShowOfferedRides}
-                      />
-                      <span className="text-sm">Angeboten</span>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    {showOfferedRides
-                      ? [
-                          ...activeRides.filter((ride) => ride.isOffered),
-                          ...offeredFreight,
-                        ].map((ride) => (
-                          <RideStatus
-                            key={ride.id}
-                            rideId={ride.id}
-                            isOffered={true}
-                            type={ride.type}
-                            onRideCompleteAction={handleRideComplete}
-                            from={ride.from}
-                            to={ride.to}
-                            driver={ride.driver}
-                            passengers={ride.passengers}
-                          />
-                        ))
-                      : activeRides
-                          .filter((ride) => !ride.isOffered)
-                          .map((ride) => (
-                            <RideStatus
-                              key={ride.id}
-                              rideId={ride.id}
-                              isOffered={false}
-                              type={ride.type}
-                              onRideCompleteAction={handleRideComplete}
-                              from={ride.from}
-                              to={ride.to}
-                              /* driver={ride.driver}*/
-                            />
-                          ))}
-                  </div>
-                </TabsContent>
-                <TabsContent value="history">
-                  <div className="my-4 flex items-center justify-between">
-                    <span className="text-small font-medium">
-                      Fahrtenhistorie
-                    </span>
-                  </div>
-                  <RideHistory
-                    rides={completedRides}
-                    /*isDriver={true}*/
-                    currentUserId="currentUserId"
-                  />
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </AuthGuard>
-  );
+    return (
+        <AuthGuard>
+            <div className="container mx-auto px-4 py-8">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                    <ProfileForm />
+                    <Card className="md:col-span-2">
+                        <CardHeader>
+                            <CardTitle>Dashboard</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <Tabs defaultValue="active">
+                                <TabsList className="grid w-full grid-cols-2">
+                                    <TabsTrigger value="active">Aktive Fahrten</TabsTrigger>
+                                    <TabsTrigger value="history">Fahrtenhistorie</TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="active">
+                                    <div className="space-y-4">
+                                        {activeRides.map((ride) => (
+                                            <RideStatus
+                                                key={ride.id}
+                                                rideId={ride.id}
+                                                isOffered={ride.isOffered}
+                                                type={ride.type}
+                                                from={ride.from}
+                                                to={ride.to}
+                                                driver={ride.driver}
+                                            />
+                                        ))}
+                                    </div>
+                                </TabsContent>
+                                <TabsContent value="history">
+                                    <RideHistory rides={completedRides} currentUserId="currentUserId" />
+                                </TabsContent>
+                            </Tabs>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        </AuthGuard>
+    );
 }

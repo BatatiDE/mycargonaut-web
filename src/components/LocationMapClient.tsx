@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from "react";
+/*import React, { useEffect, useRef } from "react";
+
 
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -119,6 +120,30 @@ const LocationMapClient: React.FC<LocationMapProps> = ({
         Use Current Location
       </button>
     </>
+  );
+};
+
+export default LocationMapClient;
+*/
+
+import React from "react";
+import { useGeoLocation } from "@/hooks/useGeoLocation";
+import Map from "@/components/Map";
+
+interface LocationMapClientProps {
+  onLocationChange: (lat: number, lng: number) => void;
+}
+
+const LocationMapClient: React.FC<LocationMapClientProps> = ({onLocationChange}) => {
+  const { location, address, loading } = useGeoLocation();
+
+  if (loading) return <div>Loading your location...</div>;
+
+  return (
+      <div>
+        {location && <Map fromLocation={location} toLocation={location} />}
+        {address && <div>Address: {address}</div>}
+      </div>
   );
 };
 
