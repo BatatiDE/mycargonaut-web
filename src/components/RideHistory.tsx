@@ -17,7 +17,7 @@ import { User } from "@/types/user";
 
 import Rating from "./Rating";
 import UserProfileCompact from "./UserProfileCompact";
-
+/*
 interface Participant {
   id: string;
   name: string;
@@ -26,29 +26,32 @@ interface Participant {
   numRides: number;
   hasRated: boolean;
 }
-
+*/
 interface RideHistoryItem {
-  id: string;
+  // id: string;
+  id: number;
   from: string;
   to: string;
   date: string;
   driver: User;
-  passengers: Participant[];
+  // passengers: Participant[];
+  passengers: User[];
   type: "ride" | "freight";
   isOffered: boolean;
   isRated: boolean;
-  ratings: { [participantId: string]: number[] };
+  // ratings: { [participantId: string]: number[] };
+  ratings: { [userId: number]: number[] };
 }
 
 interface RideHistoryProps {
   rides: RideHistoryItem[];
-  currentUserId: string;
+  currentUserId: number;
 }
 
 export default function RideHistory({
   rides,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  currentUserId,
+  // currentUserId,
 }: RideHistoryProps) {
   const [showRating, setShowRating] = useState<string | null>(null);
 
@@ -119,11 +122,13 @@ export default function RideHistory({
                           <div className="flex-grow">
                             <UserProfileCompact
                               user={{
-                                firstName: passenger.name.split(" ")[0],
-                                lastName: passenger.name.split(" ")[1] || "",
+                                firstName: passenger.firstName ||" ",
+                                lastName: passenger.lastName|| "",
+                                // firstName: passenger.name.split(" ")[1] || "",
+                                // lastName: passenger.name.split(" ")[1] || "",
                                 picture: passenger.picture,
-                                rating: passenger.rating,
-                                numRides: passenger.numRides,
+                                rating: passenger.rating || 0,
+                                numRides: passenger.numRides || 0,
                               }}
                             />
                             {canSeeRatings(ride) &&
@@ -192,7 +197,7 @@ export default function RideHistory({
                     </div>
                     {!ride.isRated && (
                       <Button
-                        onClick={() => setShowRating(ride.id)}
+                        onClick={() => setShowRating(ride.id.toString())}
                         size="sm"
                         className="ml-4"
                       >
@@ -216,16 +221,17 @@ export default function RideHistory({
                             onSubmitAction={(ratings) =>
                               handleRatingSubmit(
                                 ride.id.toString(),
-                                passenger.id,
+                                passenger.id.toString(),
                                 ratings
                               )
                             }
-                            participantName={passenger.name}
+                            // participantName={passenger.name}
+                            participantName={`${passenger.firstName || ""} ${passenger.lastName || ""}`}
                           />
                         </div>
                       )
                   )
-                : showRating === ride.id && (
+                : showRating === ride.id.toString() && (
                     <div className="mt-4">
                       <Rating
                         isDriver={false}
