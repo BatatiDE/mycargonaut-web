@@ -39,15 +39,15 @@ export default function Create() {
         <OfferRequestForm
           fromLocation={fromLocation}
           toLocation={toLocation}
-          setFromLocation={setFromLocation}
-          setToLocation={setToLocation}
+          setFromLocationAction={setFromLocation}
+          setToLocationAction={setToLocation}
         />
 
         <div className="lg:block">
           <h2 className="mb-4 text-xl font-semibold">Kartenübersicht</h2>
           <div className="h-[600px] overflow-hidden rounded-lg bg-gray-100">
             <Map
-              onLocationSelect={handleLocationSelect}
+                onLocationSelectAction={handleLocationSelect}
               fromLocation={fromLocation}
               toLocation={toLocation}
             />

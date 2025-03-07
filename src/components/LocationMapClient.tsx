@@ -126,23 +126,42 @@ const LocationMapClient: React.FC<LocationMapProps> = ({
 export default LocationMapClient;
 */
 
-import React from "react";
+import React, { useState } from "react";
 import { useGeoLocation } from "@/hooks/useGeoLocation";
 import Map from "@/components/Map";
 
-interface LocationMapClientProps {
-  onLocationChange: (lat: number, lng: number) => void;
+interface Location {
+  lat: number;
+  lng: number;
 }
 
-const LocationMapClient: React.FC<LocationMapClientProps> = ({onLocationChange}) => {
-  const { location, address, loading } = useGeoLocation();
+interface LocationMapClientProps {
+  onLocationChange?: (lat: number, lng: number) => void;
+}
+
+const LocationMapClient: React.FC<LocationMapClientProps> = ({ onLocationChange }) => {
+  const { location, loading } = useGeoLocation();
+  const [fromLocation, setFromLocation] = useState<Location | null>(null);
+  const [toLocation, setToLocation] = useState<Location | null>(null);
 
   if (loading) return <div>Loading your location...</div>;
 
   return (
       <div>
-        {location && <Map fromLocation={location} toLocation={location} />}
-        {address && <div>Address: {address}</div>}
+        <Map
+            fromLocation={fromLocation || location}
+            toLocation={toLocation}
+            onLocationSelectAction={(lat: number, lng: number, type: string) => {
+              if (type === "from") {
+                setFromLocation({ lat, lng });
+              } else {
+                setToLocation({ lat, lng });
+              }
+              if (onLocationChange) {
+                onLocationChange(lat, lng)
+              }
+            }}
+        />
       </div>
   );
 };

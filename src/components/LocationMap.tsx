@@ -1,6 +1,10 @@
 import LocationMapClient from "@/components/LocationMapClient";
 
-const LocationMap = (props: unknown) => {
+interface LocationMapProps {
+  onLocationChange: (lat: number, lng: number) => void;
+}
+
+const LocationMap = (props: LocationMapProps) => {
   return <LocationMapClient {...props} />;
 };
 

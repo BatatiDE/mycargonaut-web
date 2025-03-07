@@ -257,7 +257,7 @@ export default function AddTripPage() {
 
           {showMap && mapField && (
               <LocationMapClient
-                  onLocationChange={(lat, lng) => {
+                  onLocationChange={(lat: number, lng: number) => {
                     if (mapField) {
                       handleLocationChange(lat, lng, mapField); // Setze Koordinaten und Adresse
                     }

@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export default function Profile() {
     const [activeRides, setActiveRides] = useState([
         {
-            id: "1",
+            id: 1,
             from: "Berlin",
             to: "München",
             date: "2023-06-15",
@@ -20,7 +20,7 @@ export default function Profile() {
             type: "ride" as const,
             isOffered: true,
             driver: {
-                id: "123",
+                id: 123,
                 firstName: "John",
                 lastName: "Doe",
                 picture: "/placeholder.svg",
@@ -41,7 +41,7 @@ export default function Profile() {
             },
             passengers: [
                 {
-                    id: "2",
+                    id: 2,
                     name: "Anna Müller",
                     picture: "/placeholder.svg",
                     rating: 4.2,
@@ -50,7 +50,7 @@ export default function Profile() {
                     isRated: false,
                 },
                 {
-                    id: "3",
+                    id: 3,
                     name: "Max Schmidt",
                     picture: "/placeholder.svg",
                     rating: 4.7,
@@ -61,7 +61,7 @@ export default function Profile() {
             ],
         },
         {
-            id: "7",
+            id: 3,
             from: "Stuttgart",
             to: "Nürnberg",
             date: "2023-06-22",
@@ -69,7 +69,7 @@ export default function Profile() {
             type: "ride" as const,
             isOffered: true,
             driver: {
-                id: "124",
+                id: 124,
                 firstName: "Lisa",
                 lastName: "Weber",
                 picture: "/placeholder.svg",
@@ -94,13 +94,13 @@ export default function Profile() {
 
     const [completedRides, setCompletedRides] = useState([
         {
-            id: "8",
+            id: 8,
             from: "Köln",
             to: "Dresden",
             date: "2023-06-10",
             type: "ride" as const,
             driver: {
-                id: "121",
+                id: 121,
                 firstName: "Michael",
                 lastName: "Fischer",
                 picture: "/placeholder.svg",
@@ -152,12 +152,13 @@ export default function Profile() {
                                                 from={ride.from}
                                                 to={ride.to}
                                                 driver={ride.driver}
+                                                onRideCompleteAction={(rideId) => console.log(`Fahrt ${rideId} beendet`)} // ✅ Funktion hinzufügen
                                             />
                                         ))}
                                     </div>
                                 </TabsContent>
                                 <TabsContent value="history">
-                                    <RideHistory rides={completedRides} currentUserId="currentUserId" />
+                                    <RideHistory rides={completedRides} currentUserId={123} />
                                 </TabsContent>
                             </Tabs>
                         </CardContent>

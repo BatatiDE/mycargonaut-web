@@ -33,18 +33,18 @@ const toIcon = new L.Icon({
 });
 
 interface MapProps {
-  onLocationSelect: (lat: number, lng: number, type: "from" | "to") => void;
+  onLocationSelectAction: (lat: number, lng: number, type: "from" | "to") => void;
   fromLocation?: { lat: number; lng: number } | null;
   toLocation?: { lat: number; lng: number } | null;
 }
 
-function MapEvents({ onLocationSelect, fromLocation, toLocation }: MapProps) {
+function MapEvents({ onLocationSelectAction, fromLocation, toLocation }: MapProps) {
   useMapEvents({
     click(e) {
       if (!fromLocation) {
-        onLocationSelect(e.latlng.lat, e.latlng.lng, "from");
+        onLocationSelectAction(e.latlng.lat, e.latlng.lng, "from");
       } else if (!toLocation) {
-        onLocationSelect(e.latlng.lat, e.latlng.lng, "to");
+        onLocationSelectAction(e.latlng.lat, e.latlng.lng, "to");
       }
     },
   });
@@ -59,14 +59,14 @@ function ChangeView({ center }: { center: [number, number] }) {
 }
 
 export default function Map({
-  onLocationSelect,
-  fromLocation,
-  toLocation,
-}: MapProps) {
+                              onLocationSelectAction,
+                              fromLocation,
+                              toLocation,
+                            }: MapProps) {
   const [center, setCenter] = useState<[number, number]>([51.1657, 10.4515]); // Deutschland Zentrum
 
   useEffect(() => {
-    if (fromLocation && center) {
+    if (fromLocation) {
       setCenter([fromLocation.lat, fromLocation.lng]);
     } else if (toLocation) {
       setCenter([toLocation.lat, toLocation.lng]);
@@ -74,31 +74,24 @@ export default function Map({
   }, [fromLocation, toLocation]);
 
   return (
-    <MapContainer
-      key={`${center[0]}-${center[1]}`}
-      center={center}
-      zoom={6}
-      style={{ height: "100%", width: "100%" }}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      {fromLocation && (
-        <Marker
-          position={[fromLocation.lat, fromLocation.lng]}
-          icon={fromIcon}
+      <MapContainer
+          key={`${center[0]}-${center[1]}`}
+          center={center}
+          zoom={6}
+          style={{ height: "100%", width: "100%" }}
+      >
+        <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-      )}
-      {toLocation && (
-        <Marker position={[toLocation.lat, toLocation.lng]} icon={toIcon} />
-      )}
-      <MapEvents
-        onLocationSelect={onLocationSelect}
-        fromLocation={fromLocation}
-        toLocation={toLocation}
-      />
-      <ChangeView center={center} />
-    </MapContainer>
+        {fromLocation && <Marker position={[fromLocation.lat, fromLocation.lng]} icon={fromIcon} />}
+        {toLocation && <Marker position={[toLocation.lat, toLocation.lng]} icon={toIcon} />}
+        <MapEvents
+            onLocationSelectAction={onLocationSelectAction}
+            fromLocation={fromLocation}
+            toLocation={toLocation}
+        />
+        <ChangeView center={center} />
+      </MapContainer>
   );
 }

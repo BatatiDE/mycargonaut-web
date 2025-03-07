@@ -19,7 +19,8 @@ import { User } from "@/types/user";
 import UserProfileCompact from "./UserProfileCompact";
 
 interface RideStatusProps {
-  rideId: string;
+  // rideId: string;
+  rideId: number;
   isOffered: boolean;
   type: "ride" | "freight";
   onRideCompleteAction: (rideId: string) => void;
@@ -267,7 +268,7 @@ export default function RideStatus({
       case "Fahrt beenden":
         setStatus("completed");
         setIsSharing(false);
-        onRideCompleteAction(rideId);
+        onRideCompleteAction(rideId.toString());
         toast({
           title: "Fahrt beendet",
           description: "Die Fahrt wurde erfolgreich beendet.",
