@@ -14,6 +14,8 @@ interface Suggestion {
     lon: string;
 }
 
+const DEBOUNCE_DELAY = 300;
+
 const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
                                                                        value,
                                                                        onChange,
@@ -22,7 +24,9 @@ const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
                                                                    }) => {
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(null); // Debounce Timer hinzufügen
 
+    /*
     const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const query = e.target.value;
         onChange(query);
@@ -31,8 +35,9 @@ const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
             setIsLoading(true);
             try {
                 const response = await fetch(
-                    `https://nominatim.openstreetmap.org/search?format=json&q=${query}`
+                    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`
                 );
+
                 if (response.ok) {
                     const data: Suggestion[] = await response.json();
                     setSuggestions(data);
@@ -44,6 +49,37 @@ const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
             } finally {
                 setIsLoading(false);
             }
+        } else {
+            setSuggestions([]);
+        }
+    };
+    */
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const query = e.target.value;
+        onChange(query);
+
+        if (debounceTimer) clearTimeout(debounceTimer); // Vorherigen Timer abbrechen
+
+        if (query.length > 2) {
+            setIsLoading(true);
+            const newTimer = setTimeout(async () => {
+                try {
+                    const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        setSuggestions(data);
+                    } else {
+                        console.error("Failed to fetch location suggestions");
+                    }
+                } catch (error) {
+                    console.error("Error fetching location suggestions:", error);
+                } finally {
+                    setIsLoading(false);
+                }
+            }, DEBOUNCE_DELAY);
+
+            setDebounceTimer(newTimer); // Speichere den neuen Timer
         } else {
             setSuggestions([]);
         }
