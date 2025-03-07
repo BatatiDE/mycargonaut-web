@@ -1,4 +1,4 @@
-export async function getCoordinatesFromAddress(address: string) {
+/* export async function getCoordinatesFromAddress(address: string) {
     try {
         const response = await fetch(
             `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`
@@ -9,6 +9,28 @@ export async function getCoordinatesFromAddress(address: string) {
     } catch (error) {
         console.error("Fehler beim Abrufen der Koordinaten:", error);
         return null;
+    }
+}
+*/
+export async function getCoordinatesFromAddress(address: string) {
+    try {
+        const response = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`
+        );
+        const data = await response.json();
+
+        if (!data || data.length === 0) {
+            return [];
+        }
+
+        return data.map((item: any) => ({
+            name: item.display_name,
+            lat: parseFloat(item.lat),
+            lng: parseFloat(item.lon),
+        }));
+    } catch (error) {
+        console.error("Fehler beim Abrufen der Koordinaten:", error);
+        return [];
     }
 }
 

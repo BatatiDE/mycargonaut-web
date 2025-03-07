@@ -1,7 +1,7 @@
 "use client";
 
 import {useRouter} from "next/navigation";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 
 import {format} from "date-fns";
 import {de} from "date-fns/locale";
@@ -33,6 +33,7 @@ import {
     getCoordinatesFromAddress,
 } from "@/utils/geocoding";
 import {tripApi} from "@/utils/tripApi";
+import LocationAutocomplete from "@/components/LocationAutocomplete";
 
 
 interface OfferRequestFormProps {
@@ -87,7 +88,8 @@ export default function OfferRequestForm({
 
         if (value.length > 3) {
             const coords = await getCoordinatesFromAddress(value);
-            if (coords) {
+            console.log("Koordinaten für", value, ":", coords);
+            if (coords && coords.lat !== undefined && coords.lng !== undefined) {
                 if (name === "startingPoint") {
                     setFromLocationAction(coords);
                 } else {
@@ -118,14 +120,6 @@ export default function OfferRequestForm({
 
         updateAddress();
     }, [fromLocation, toLocation]);
-
-    /* useEffect(() => {
-      if (!user) {
-        router.push("/login");
-      } else if (user.id) {
-        setForm((prev) => ({ ...prev, driverId: Number(user.id) }));
-      }
-    }, [user, router]);*/
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -229,22 +223,18 @@ export default function OfferRequestForm({
             </div>
             <div className="space-y-2">
                 <Label htmlFor="startingPoint">Von</Label>
-                <Input
-                    id="startingPoint"
-                    name="startingPoint"
+                <LocationAutocomplete
                     value={form.startingPoint}
-                    onChange={handleLocationChange}
-                    required
+                    onChange={(value) => setForm((prev) => ({...prev, startingPoint: value}))}
+                    onSelect={(lat, lon) => setFromLocationAction({lat, lng: lon})}
                 />
             </div>
             <div className="space-y-2">
                 <Label htmlFor="destinationPoint">Nach</Label>
-                <Input
-                    id="destinationPoint"
-                    name="destinationPoint"
+                <LocationAutocomplete
                     value={form.destinationPoint}
-                    onChange={handleLocationChange}
-                    required
+                    onChange={(value) => setForm((prev) => ({...prev, destinationPoint: value}))}
+                    onSelect={(lat, lon) => setToLocationAction({lat, lng: lon})}
                 />
             </div>
             <div className="space-y-2">
