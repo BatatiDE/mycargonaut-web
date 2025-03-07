@@ -54,8 +54,10 @@ export const tripApi = {
                     time
                     availableSeats
                     freightSpace
+                    price
                     driverId  
                     status
+                    notes
                     type
                     bookedUsers {
                       id
@@ -80,8 +82,8 @@ export const tripApi = {
     date: string;
     time: string;
     price: number;
-    availableSeats: number;
-    freightSpace: number;
+    availableSeats?: number;
+    freightSpace?: number;
     isFreightRide: boolean;
     vehicle?: string;
     notes?: string;
