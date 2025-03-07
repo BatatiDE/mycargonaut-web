@@ -10,7 +10,7 @@ import {
 } from "react";
 
 import { User } from "@/types/user";
-import { authApi, userApi } from "@/utils/api";
+import { authApi, profileApi } from "@/utils/old_api";
 
 // Use the existing authApi
 
@@ -50,13 +50,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Login function
   const login = async (email: string, password: string) => {
-    const { token, user } = await authApi.login(email, password);
-    setToken(token);
-    setUser(user);
+    try {
+      // Hier ein Objekt mit den Parametern übergeben
+      const { token, user } = await authApi.login({ email, password });
 
-    localStorage.setItem("authToken", token);
-    localStorage.setItem("authUser", JSON.stringify(user));
+      // Token und User im LocalStorage speichern
+      if (token) {
+        localStorage.setItem("authToken", token);
+        localStorage.setItem("authUser", JSON.stringify(user)); // Speichern des Tokens und Users
+        setToken(token);
+        setUser(user);
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+      throw error;
+    }
   };
+
 
   // Logout function
   const logout = () => {
@@ -70,7 +80,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Refresh user profile
   const refreshUser = async () => {
     try {
-      const updatedUser = await userApi.getProfile();
+      const updatedUser = await profileApi.fetchProfile();
       setUser(updatedUser);
       localStorage.setItem("authUser", JSON.stringify(updatedUser));
     } catch (error) {
