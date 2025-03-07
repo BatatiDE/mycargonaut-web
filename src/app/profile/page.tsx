@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import ProfileForm from "@/components/ProfileForm";
-import RideHistory from "@/components/RideHistory";
-import RideStatus from "@/components/RideStatus";
+import ProfileForm from "@/components/forms/ProfileForm";
+import RideHistory from "@/components/trips/RideHistory";
+import RideStatus from "@/components/trips/RideStatus";
 import AuthGuard from "@/components/shared/AuthGuard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
+// import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Profile() {

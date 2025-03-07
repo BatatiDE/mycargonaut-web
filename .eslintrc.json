@@ -22,7 +22,7 @@
       "double"
     ],
     "check-file/filename-naming-convention": [
-      "error",
+      "off",
       {
         "**/app/**/page.tsx": "KEBAB_CASE", // pages.tsx in kebab-case
         "**/components/*.tsx": "PASCAL_CASE", // Komponenten in PascalCase

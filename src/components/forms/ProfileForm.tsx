@@ -26,8 +26,8 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { User } from "@/types/user";
-import { useAuth } from "@/utils/AuthContext";
-import { profileApi } from "@/utils/api";
+import { useAuth } from "@/context/AuthContext";
+import { userApi } from "@/utils/api";
 import { getErrorMessage } from "@/utils/errorHandler";
 
 export default function ProfileForm() {
@@ -46,7 +46,7 @@ export default function ProfileForm() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const userData = await profileApi.fetchProfile();
+        const userData = await userApi.getProfile();
         setProfile(userData);
         setEditedProfile(userData);
         setError(null);
@@ -96,7 +96,7 @@ export default function ProfileForm() {
     setSuccessMessage(null);
 
     try {
-      await profileApi.updateProfile(editedProfile);
+      await userApi.updateProfile(editedProfile);
       setSuccessMessage("Profile updated successfully.");
       setProfile((prev) => {
         if (prev === null) return null;

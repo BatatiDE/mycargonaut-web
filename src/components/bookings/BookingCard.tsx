@@ -19,16 +19,6 @@ const AddTripPage = () => {
     setForm({ ...form, [name]: value });
   };
 
-  /*
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await offerApi.createOffer(form);
-      router.push("/trips");
-    } catch (error) {
-      console.error("Failed to create trip:", error);
-    }
-  }; */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const offer = {

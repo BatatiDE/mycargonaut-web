@@ -3,14 +3,14 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import BookingConfirmationModal from "@/components/BookingConfirmModal";
+import BookingConfirmationModal from "@/components/modals/BookingConfirmModal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import type { Trip } from "@/types/trip";
-import { tripApi } from "@/utils/tripApi";
+import { tripApi } from "@/services/tripApi";
 
-import UserProfileCompact from "./UserProfileCompact";
+import UserProfileCompact from "../user/UserProfileCompact";
 
 interface OfferListProps {
   type: "offers" | "requests";

@@ -151,11 +151,11 @@ export default function AddTripPage() {
 */"use client";
 
 import { useState } from "react";
-import { tripApi } from "@/utils/tripApi";
+import { tripApi } from "@/services/tripApi";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/utils/AuthContext";
-import LocationAutocomplete from "@/components/LocationAutocomplete";
-import LocationMapClient from "@/components/LocationMapClient";
+import { useAuth } from "@/context/AuthContext";
+import LocationAutocomplete from "@/components/map/LocationAutocomplete";
+import LocationMapClient from "@/components/map/LocationMapClient";
 
 export default function AddTripPage() {
   const router = useRouter();
@@ -178,9 +178,13 @@ export default function AddTripPage() {
     setForm({ ...form, [name]: value });
   };
 
-  const handleAutocompleteChange = (field: string, value: string) => {
-    setForm({ ...form, [field]: value });
+  const handleAutocompleteChange = (field: "startPoint" | "destinationPoint", value: string | number) => {
+    setForm((prev) => ({
+      ...prev,
+      [field]: String(value), // Konvertiere value in einen String
+    }));
   };
+
 
   const handleLocationChange = (lat: number, lng: number, field: "startPoint" | "destinationPoint") => {
     setForm((prevForm) => ({
@@ -198,15 +202,15 @@ export default function AddTripPage() {
       return;
     }
     try {
+      const tripType: "OFFER" | "REQUEST" = "OFFER";
       const payload = {
         ...form,
         driverId: Number(form.driverId),
-        availableSeats: form.availableSeats || 0, // Mapping des Aliases
-        price: 0, // Falls kein Preis benötigt wird, setze 0
-        freightSpace: 0, // Standardwert, falls nicht genutzt
-        isFreightRide: false, // Standardmäßig keine Frachtfahrt
-        // type: form.type === "REQUEST" ? "REQUEST" : "OFFER",
-        type: "OFFER" as "OFFER", // Oder "REQUEST", je nach Use-Case
+        availableSeats: form.availableSeats || 0,
+        price: 0,
+        freightSpace: 0,
+        isFreightRide: false,
+        type: tripType,
       };
       await tripApi.addTrip(payload);
       router.push("/dashboard");
@@ -214,6 +218,14 @@ export default function AddTripPage() {
       alert("Failed to add trip. Please try again.");
     }
   };
+
+  const handleLocationSelect = (field: "startPoint" | "destinationPoint", selectedLocation: string) => {
+    setForm((prev) => ({
+      ...prev,
+      [field]: selectedLocation,
+    }));
+  };
+
 
   return (
       <div className="p-6 max-w-lg mx-auto">
@@ -223,6 +235,7 @@ export default function AddTripPage() {
             <LocationAutocomplete
                 value={form.startingPoint}
                 onChange={(value) => handleAutocompleteChange("startPoint", value)}
+                onSelect={(selectedLocation) => handleLocationSelect("startPoint", String(selectedLocation))}
                 placeholder="Start Point"
             />
             <button
@@ -241,6 +254,7 @@ export default function AddTripPage() {
             <LocationAutocomplete
                 value={form.destinationPoint}
                 onChange={(value) => handleAutocompleteChange("destinationPoint", value)}
+                onSelect={(selectedLocation) => handleLocationSelect("startPoint", String(selectedLocation))}
                 placeholder="Destination"
             />
             <button

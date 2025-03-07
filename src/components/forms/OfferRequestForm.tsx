@@ -26,14 +26,12 @@ import {
 import {Switch} from "@/components/ui/switch";
 import {Textarea} from "@/components/ui/textarea";
 import {toast} from "@/hooks/use-toast";
-import {useAuth} from "@/utils/AuthContext";
+import {useAuth} from "@/context/AuthContext";
 import {
-    getAddressFromCoordinates,
     getAddressSuggestions,
-    getCoordinatesFromAddress,
 } from "@/utils/geocoding";
-import {tripApi} from "@/utils/tripApi";
-import LocationAutocomplete from "@/components/LocationAutocomplete";
+import {tripApi} from "@/services/tripApi";
+import LocationAutocomplete from "@/components/map/LocationAutocomplete";
 
 
 interface OfferRequestFormProps {
@@ -80,7 +78,7 @@ export default function OfferRequestForm({
         }
     }, [form.date]);
 
-    const handleLocationChange = async (
+    /* const handleLocationChange = async (
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
         const {name, value} = e.target;
@@ -104,22 +102,24 @@ export default function OfferRequestForm({
             }
         }
     };
+     */
 
 
     useEffect(() => {
-        async function updateAddress() {
+        const fetchAndUpdateAddress = async () => {
             if (fromLocation) {
                 const address = await getAddressSuggestions(`${fromLocation.lat},${fromLocation.lng}`);
-                setForm((prev) => ({...prev, startingPoint: address[0] || ""}));
+                setForm((prev) => ({ ...prev, startingPoint: address[0] || "" }));
             }
             if (toLocation) {
                 const address = await getAddressSuggestions(`${toLocation.lat},${toLocation.lng}`);
-                setForm((prev) => ({...prev, destinationPoint: address[0] || ""}));
+                setForm((prev) => ({ ...prev, destinationPoint: address[0] || "" }));
             }
-        }
+        };
 
-        updateAddress();
+        void fetchAndUpdateAddress();
     }, [fromLocation, toLocation]);
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

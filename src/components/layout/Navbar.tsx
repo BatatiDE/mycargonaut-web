@@ -20,7 +20,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useAuth } from "@/utils/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -142,7 +142,7 @@ export default function Navbar() {
     <header className="bg-white shadow-sm">
       <div className="container mx-auto">
         <nav className="flex items-center justify-between py-4">
-          <Link href="/" className="text-orange-500">
+          <Link href="/public" className="text-orange-500">
             <svg
               viewBox="0 0 848.17 255.01"
               className="h-8"

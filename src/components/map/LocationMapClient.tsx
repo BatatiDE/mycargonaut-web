@@ -2,7 +2,7 @@
 
 import React, {useState} from "react";
 import {useGeoLocation} from "@/hooks/useGeoLocation";
-import Map from "@/components/Map";
+import Map from "@/components/map/Map";
 
 interface Location {
     lat: number;

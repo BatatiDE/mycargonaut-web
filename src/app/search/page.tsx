@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 
-import OfferList from "@/components/OfferList";
-import Search from "@/components/Search";
+import OfferList from "@/components/bookings/OfferList";
+import Search from "@/components/search/Search";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function SearchPage() {

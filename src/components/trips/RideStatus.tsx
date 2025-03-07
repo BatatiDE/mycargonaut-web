@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { User } from "@/types/user";
 
-import UserProfileCompact from "./UserProfileCompact";
+import UserProfileCompact from "../user/UserProfileCompact";
 
 interface RideStatusProps {
   // rideId: string;

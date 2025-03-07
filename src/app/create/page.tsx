@@ -3,11 +3,11 @@
 import dynamic from "next/dynamic";
 import { useState } from "react";
 
-import LocationMapClient from "@/components/LocationMapClient";
-import OfferRequestForm from "@/components/OfferRequestForm";
+// import LocationMapClient from "@/components/map/LocationMapClient";
+import OfferRequestForm from "@/components/forms/OfferRequestForm";
 
 // Dynamischer Import für Next.js
-const Map = dynamic(() => import("@/components/Map"), { ssr: false });
+const Map = dynamic(() => import("@/components/map/Map"), { ssr: false });
 
 export default function Create() {
   const [fromLocation, setFromLocation] = useState<{

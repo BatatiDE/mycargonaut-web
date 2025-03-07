@@ -15,18 +15,9 @@ import {
 } from "@/components/ui/card";
 import { User } from "@/types/user";
 
-import Rating from "./Rating";
-import UserProfileCompact from "./UserProfileCompact";
-/*
-interface Participant {
-  id: string;
-  name: string;
-  picture: string;
-  rating: number;
-  numRides: number;
-  hasRated: boolean;
-}
-*/
+import Rating from "../shared/Rating";
+import UserProfileCompact from "../user/UserProfileCompact";
+
 interface RideHistoryItem {
   // id: string;
   id: number;

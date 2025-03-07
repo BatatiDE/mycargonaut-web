@@ -54,7 +54,7 @@ export default function ViewTripsPage() {
 "use client";
 
 import { useEffect, useState } from "react";
-import { tripApi } from "@/utils/tripApi";  // Diese importierte API wird benutzt
+import { tripApi } from "@/services/tripApi";  // Diese importierte API wird benutzt
 import { Trip } from "@/types/trip"; // Hier Trip importieren
 
 export default function ViewTripsPage() {

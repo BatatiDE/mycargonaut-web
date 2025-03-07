@@ -1,4 +1,4 @@
-import LocationMapClient from "@/components/LocationMapClient";
+import LocationMapClient from "@/components/map/LocationMapClient";
 
 interface LocationMapProps {
   onLocationChange: (lat: number, lng: number) => void;
