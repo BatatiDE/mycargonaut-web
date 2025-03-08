@@ -10,7 +10,7 @@ import {
 } from "react";
 
 import { User } from "@/types/user";
-import { authApi, profileApi } from "@/utils/old_api";
+import { authApi, profileApi } from "@/utils/api";
 
 // Use the existing authApi
 
@@ -67,7 +67,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-
   // Logout function
   const logout = () => {
     setToken(null);
@@ -80,7 +79,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Refresh user profile
   const refreshUser = async () => {
     try {
-      const updatedUser = await profileApi.fetchProfile();
+      const updatedUser = await profileApi.getProfile();
       setUser(updatedUser);
       localStorage.setItem("authUser", JSON.stringify(updatedUser));
     } catch (error) {
