@@ -3,9 +3,6 @@
 import React, { useState } from "react";
 
 import { getErrorMessage } from "@/utils/errorHandler";
-
-// Assuming you place the function in a utility file
-
 export default function SearchPage() {
   const [results, setResults] = useState([]);
   const [error, setError] = useState<string | null>(null);

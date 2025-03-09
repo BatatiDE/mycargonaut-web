@@ -1,5 +1,6 @@
-const API_URL = "http://localhost:8080/api/vehicles"; // D
+import apiFetch from "@/utils/api";
 
+// Fahrzeug-Typ
 interface Vehicle {
     id?: number;
     type: string;
@@ -8,58 +9,38 @@ interface Vehicle {
     licensePlate: string;
 }
 
+// Fahrzeuge abrufen
 export const getVehicles = async () => {
-    const response = await fetch(API_URL);
-    if (!response.ok) throw new Error("Fehler beim Abrufen der Fahrzeuge");
-    return response.json();
+    console.log("Fetching vehicles...");
+    return apiFetch("/vehicles", { method: "GET" });
 };
 
-export const deleteVehicle = async (id: number) => {
-    const response = await fetch(`${API_URL}/${id}`, {method: "DELETE"});
-    if (!response.ok) throw new Error("Fehler beim Löschen des Fahrzeugs");
+// Einzelnes Fahrzeug abrufen
+export const getVehicleById = async (id: number) => {
+    console.log(`Fetching vehicle with ID ${id}...`);
+    return apiFetch(`/vehicles/${id}`, { method: "GET" });
 };
 
+// Fahrzeug hinzufügen
 export const addVehicle = async (vehicleData: Vehicle) => {
-    const response = await fetch(`${API_URL}/vehicles`, {
+    console.log("Adding vehicle:", vehicleData);
+    return apiFetch("/vehicles", {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
         body: JSON.stringify(vehicleData),
     });
-
-    if (!response.ok) {
-        throw new Error("Fehler beim Hinzufügen des Fahrzeugs");
-    }
-
-    return response.json();
 };
 
-export const getVehicleById = async (id: number) => {
-    const response = await fetch(`${API_URL}/vehicles/${id}`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    });
-
-    if (!response.ok) {
-        throw new Error(`Fehler beim Abrufen des Fahrzeugs: ${response.status}`);
-    }
-
-    return response.json();
-};
-
-export const updateVehicle = async (id: number, data: any) => {
-    const response = await fetch(`${API_URL}/vehicles/${id}`, {
+// Fahrzeug aktualisieren
+export const updateVehicle = async (id: number, data: Partial<Vehicle>) => {
+    console.log(`Updating vehicle ID ${id}:`, data);
+    return apiFetch(`/vehicles/${id}`, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-        },
         body: JSON.stringify(data),
     });
+};
 
-    if (!response.ok) {
-        throw new Error(`Fehler beim Aktualisieren des Fahrzeugs: ${response.status}`);
-    }
-
-    return response.json();
+// Fahrzeug löschen
+export const deleteVehicle = async (id: number) => {
+    console.log(`Deleting vehicle ID ${id}...`);
+    return apiFetch(`/vehicles/${id}`, { method: "DELETE" });
 };

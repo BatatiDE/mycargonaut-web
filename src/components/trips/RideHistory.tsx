@@ -17,7 +17,6 @@ import type { User } from "@/types/user";
 import Rating from "../shared/Rating";
 import UserProfileCompact from "../user/UserProfileCompact";
 
-// Erweitere den User-Typ lokal, falls zusätzliche Felder benötigt werden
 interface ExtendedUser extends User {
   firstName: string;
   lastName: string;
@@ -38,9 +37,9 @@ interface RideHistoryItem {
   from: string;
   to: string;
   date: string;
-  driverId: string; // Vom Backend geliefert
-  driver?: ExtendedUser; // Optional
-  passengers?: User[]; // Optional
+  driverId: string;
+  driver?: ExtendedUser;
+  passengers?: User[];
   type: "ride" | "freight";
   isOffered: boolean;
   isRated: boolean;
@@ -85,12 +84,11 @@ export default function RideHistory({ rides }: RideHistoryProps) {
   return (
       <div className="space-y-4">
         {rides.map((ride) => {
-          // Erzeuge ein Fallback-Objekt für den Fahrer, falls ride.driver fehlt
           const fallbackDriver: ExtendedUser = {
             id: Number(ride.driverId) || 0,
             firstName: "Unbekannt",
             lastName: "",
-            picture: "/placeholder.svg", // Stelle sicher, dass diese Datei im public-Ordner liegt
+            picture: "/placeholder.svg",
             rating: 0,
             numRides: 0,
             hasRated: false,

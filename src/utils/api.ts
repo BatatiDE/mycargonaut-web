@@ -1,10 +1,9 @@
 import { User } from "@/types/user";
 
-const API_URL = "http://localhost:8080/api"; // Replace with your backend URL
+const API_URL = "http://localhost:8080/api";
 
-// Generic Fetch Helper
 async function apiFetch(endpoint: string, options: RequestInit = {}) {
-  const token = localStorage.getItem("authToken"); // Fetch token dynamically
+  const token = localStorage.getItem("authToken");
 
   const response = await fetch(`${API_URL}${endpoint}`, {
     headers: {

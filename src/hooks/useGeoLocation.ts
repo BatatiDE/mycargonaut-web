@@ -39,7 +39,6 @@ export function useGeoLocation() {
     return { location, loading, error };
 }
 
-// Funktion für Reverse Geocoding (Google Maps oder OpenStreetMap API nutzen)
 async function fetchAddress(lat: number, lng: number): Promise<string> {
     try {
         const res = await fetch(

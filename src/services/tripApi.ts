@@ -2,7 +2,6 @@ import { Trip } from "@/types/trip";
 
 const TRIP_GRAPHQL_ENDPOINT = "http://localhost:8080/graphql"; // Ensure correct backend URL
 
-// Generic GraphQL Fetch Helper for Trips
 async function graphQLFetch(query: string, variables?: Record<string, any>) {
   const token = localStorage.getItem("authToken");
 

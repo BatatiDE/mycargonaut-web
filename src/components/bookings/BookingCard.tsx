@@ -195,7 +195,6 @@ export default function OfferList({ type, searchCriteria }: OfferListProps) {
             ))
         )}
 
-        {/* Nur rendern, wenn das jeweilige Modal aktiv ist */}
         {selectedTrip && isBookingModalOpen && (
             <BookingConfirmationModal
                 isOpen={isBookingModalOpen}

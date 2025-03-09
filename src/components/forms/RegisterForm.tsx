@@ -45,7 +45,6 @@ export default function RegisterForm() {
           birthdate: calculateAge(birthDate),
         };
         await authApi.register(userData);
-        // Redirect to login page or directly log in the user
         router.push("/login");
       } catch (error) {
         console.error("Registration failed:", error);

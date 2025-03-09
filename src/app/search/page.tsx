@@ -14,13 +14,11 @@ export default function SearchPage() {
     passengerSeats: 0,
     freightSpace: 0,
     isFreightOnly: false,
-    /*filteredRides: [] as Trip []*/
   });
   const [activeTab, setActiveTab] = useState<"offers" | "requests">("offers");
 
   const handleSearch = (criteria: typeof searchCriteria) => {
     setSearchCriteria(criteria);
-    // Here you would normally perform the search with the new criteria
     console.log("New search criteria:", criteria);
   };
 
@@ -35,7 +33,6 @@ export default function SearchPage() {
         <div className="lg:col-span-2">
           <Tabs
             value={activeTab}
-            /*defaultValue="offers"*/
             onValueChange={(value) =>
               setActiveTab(value as "offers" | "requests")
             }

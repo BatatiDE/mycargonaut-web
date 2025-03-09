@@ -25,8 +25,8 @@ export interface Ride {
   status: "Upcoming" | "In Progress" | "Completed";
   type: "ride" | "freight";
   isOffered: boolean;
-  driver: User; // Fahrer ist ein User
-  passengers: User[]; // Passagiere sind ebenfalls User
+  driver: User;
+  passengers: User[];
   isRated: boolean;
-  ratings: { [userId: number]: number[] }; // Bewertungen nach User-ID gespeichert
+  ratings: { [userId: number]: number[] };
 }

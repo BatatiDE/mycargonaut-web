@@ -1,20 +1,18 @@
 export interface ApiError {
-  status?: number; // HTTP status code
+  status?: number;
   data?: {
-    message?: string; // General error message
-    details?: Record<string, string>; // Field-specific validation errors
+    message?: string;
+    details?: Record<string, string>;
   };
 }
 
 export function getErrorMessage(error: unknown): string {
-  // Handle structured API errors
   if (typeof error === "object" && error !== null) {
     const apiError = error as ApiError;
 
     if (apiError.data) {
       const { message, details } = apiError.data;
 
-      // If there are validation details, format them nicely
       if (details && typeof details === "object") {
         const formattedDetails = Object.entries(details)
           .map(([field, msg]) => `${field}: ${msg}`)

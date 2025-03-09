@@ -113,8 +113,6 @@ export default function VehiclesPage() {
     return (
         <div className="max-w-4xl mx-auto p-4">
             <h1 className="text-2xl font-bold mb-4">Meine Fahrzeuge</h1>
-
-            {/* 🚗 Fahrzeug hinzufügen */}
             <div className="mb-4 space-y-2">
                 <Label>Typ</Label>
                 <Input
@@ -143,7 +141,6 @@ export default function VehiclesPage() {
                 </Button>
             </div>
 
-            {/* 🚗 Fahrzeug-Liste */}
             <h2 className="text-xl font-semibold mb-2">Meine Fahrzeuge:</h2>
             <ul className="space-y-2">
                 {vehicles.map((v) => (

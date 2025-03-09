@@ -1,17 +1,3 @@
-/* export async function getCoordinatesFromAddress(address: string) {
-    try {
-        const response = await fetch(
-            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`
-        );
-        const data = await response.json();
-        if (data.length === 0) return null;
-        return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
-    } catch (error) {
-        console.error("Fehler beim Abrufen der Koordinaten:", error);
-        return null;
-    }
-}
-*/
 export async function getCoordinatesFromAddress(address: string) {
     try {
         const response = await fetch(

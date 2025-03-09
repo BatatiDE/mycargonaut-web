@@ -57,7 +57,6 @@ export default function BookingSuccessModal({
         };
     }, [isOpen, duration]);
 
-    // Neuer Effekt: Wenn secondsLeft 0 erreicht, automatisch onComplete aufrufen.
     useEffect(() => {
         if (secondsLeft === 0) {
             onComplete();
@@ -76,7 +75,6 @@ export default function BookingSuccessModal({
                 </DialogHeader>
                 <div className="my-4 flex flex-col items-center">
                     <svg width={100} height={100} className="mb-4">
-                        {/* Hintergrundkreis */}
                         <circle
                             stroke="#e5e7eb"
                             fill="transparent"
@@ -85,7 +83,6 @@ export default function BookingSuccessModal({
                             cx="50"
                             cy="50"
                         />
-                        {/* Fortschrittskreis */}
                         <circle
                             stroke="#4ade80"
                             fill="transparent"

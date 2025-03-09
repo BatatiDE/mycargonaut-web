@@ -109,7 +109,6 @@ export default function ProfileForm() {
     }
   };
 
-  //TODO: Berechnung Überarbeiten
   const calculateAge = (birthdate: string | null): number => {
     if (!birthdate) return 0;
     const today = new Date();

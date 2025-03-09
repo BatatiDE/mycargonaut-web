@@ -52,8 +52,6 @@ export default function OfferRequestForm({
     const router = useRouter();
     const {user} = useAuth();
     const [error, setError] = useState("");
-    // const [fromLocation, setFromLocation] = useState<{ lat: number; lng: number } | null>(null);
-    // const [toLocation, setToLocation] = useState<{ lat: number; lng: number } | null>(null);
     const [isOffer, setIsOffer] = useState(true);
     const [form, setForm] = useState(() => ({
         driverId: user?.id ? Number(user.id) : null,
@@ -77,33 +75,6 @@ export default function OfferRequestForm({
             setDate(new Date(form.date));
         }
     }, [form.date]);
-
-    /* const handleLocationChange = async (
-        e: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        const {name, value} = e.target;
-        setForm((prev) => ({...prev, [name]: value}));
-
-        if (value.length > 3) {
-            const coords = await getCoordinatesFromAddress(value);
-            console.log("Koordinaten für", value, ":", coords);
-            if (coords && coords.lat !== undefined && coords.lng !== undefined) {
-                if (name === "startingPoint") {
-                    setFromLocationAction(coords);
-                } else {
-                    setToLocationAction(coords);
-                }
-            } else {
-                if (name === "startingPoint") {
-                    setFromLocationAction(null);
-                } else {
-                    setToLocationAction(null);
-                }
-            }
-        }
-    };
-     */
-
 
     useEffect(() => {
         const fetchAndUpdateAddress = async () => {

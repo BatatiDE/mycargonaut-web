@@ -20,7 +20,6 @@ import UserProfileCompact from "../user/UserProfileCompact";
 import {tripApi} from "@/services/tripApi";
 
 interface RideStatusProps {
-  // rideId: string;
   rideId: number;
   isOffered: boolean;
   type: "ride" | "freight";
@@ -267,10 +266,8 @@ export default function RideStatus({
         setStatus("in_progress");
         break;
       case "Fahrt beenden":
-        // Rufe die Mutation zum Aktualisieren des Trip‑Status auf
         tripApi.updateTripStatus(rideId.toString(), "COMPLETED")
             .then((updatedTrip) => {
-              // Optional: Aktualisiere den lokalen Zustand
               setStatus("completed");
               setIsSharing(false);
               onRideCompleteAction(rideId.toString());

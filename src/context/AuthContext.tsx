@@ -12,8 +12,6 @@ import {
 import { User } from "@/types/user";
 import { authApi, profileApi } from "@/utils/api";
 
-// Use the existing authApi
-
 interface AuthContextType {
   token: string | null;
   user: User | null;
@@ -51,7 +49,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Login function
   const login = async (email: string, password: string) => {
     try {
-      // Hier ein Objekt mit den Parametern übergeben
       const { token, user } = await authApi.login({ email, password });
 
       // Token und User im LocalStorage speichern

@@ -46,7 +46,7 @@ export default function EditVehiclePage() {
     }, [vehicleId, setValue]);
 
     const onSubmit = async (data: VehicleFormData) => {
-        // ✅ Sicherstellen, dass vehicleId existiert, bevor updateVehicle aufgerufen wird
+        // Sicherstellen, dass vehicleId existiert, bevor updateVehicle aufgerufen wird
         if (typeof vehicleId !== "number" || isNaN(vehicleId)) {
             console.error("Fehler: Ungültige Fahrzeug-ID.");
             return;

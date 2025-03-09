@@ -22,10 +22,10 @@ export default function LoginForm() {
     setError("");
 
     try {
-      await login(email, password); // Call the login function from AuthContext
+      await login(email, password);
       console.log("login called");
       console.log("Navigating to dashboard");
-      router.push("/create"); // Redirect to dashboard on successful login
+      router.push("/create");
     } catch (err) {
       const message = getErrorMessage(err);
       setError(message);
