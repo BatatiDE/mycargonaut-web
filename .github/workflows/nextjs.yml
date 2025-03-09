@@ -1,0 +1,82 @@
+name: CI/CD Pipeline
+
+  lint-frontend:
+    name: Lint Frontend
+    runs-on: ubuntu-latest
+    needs: checkout-code
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set Up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.18.0
+
+      - name: Lint Frontend Code
+        run: |
+          cd frontend
+          npm install
+          npm run lint
+  test-frontend:
+    name: Test Frontend
+    runs-on: ubuntu-latest
+    needs: lint-frontend
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set Up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.18.0
+
+      - name: Install Dependencies and Run Tests
+        run: |
+          cd frontend
+          npm install
+          npm test
+  ui-ux-tests:
+    name: UI/UX Tests
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-frontend]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set Up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.18.0
+
+      - name: Install Dependencies
+        run: |
+          cd frontend
+          npm install
+      - name: Start Frontend Server
+        run: |
+          cd frontend
+          npm run dev &
+        env:
+          PORT: 3000
+
+      - name: Wait for Frontend Server
+        run: |
+          npx wait-on http://localhost:3000
+      - name: Run Cypress Tests
+        run: |
+          cd frontend
+          npx cypress run
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [ui-ux-tests]
+    if: success()
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Deploy to Staging Server
+        run: |
+          echo "Deploying to Staging Environment..."
+          # Add deployment commands here
