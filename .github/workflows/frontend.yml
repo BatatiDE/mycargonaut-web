@@ -1,5 +1,4 @@
 name: CI/CD Pipeline
-
   lint-frontend:
     name: Lint Frontend
     runs-on: ubuntu-latest
