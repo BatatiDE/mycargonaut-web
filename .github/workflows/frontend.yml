@@ -21,7 +21,6 @@ jobs:
           node-version: 18.18.0
       - name: Lint Frontend Code
         run: |
-          cd frontend
           npm install
           npm run lint
 
@@ -40,7 +39,6 @@ jobs:
 
       - name: Install Dependencies and Run Tests
         run: |
-          cd frontend
           npm install
           npm test
   ui-ux-tests:
@@ -58,11 +56,9 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          cd frontend
           npm install
       - name: Start Frontend Server
         run: |
-          cd frontend
           npm run dev &
         env:
           PORT: 3000
@@ -72,7 +68,6 @@ jobs:
           npx wait-on http://localhost:3000
       - name: Run Cypress Tests
         run: |
-          cd frontend
           npx cypress run
   deploy-staging:
     name: Deploy to Staging
