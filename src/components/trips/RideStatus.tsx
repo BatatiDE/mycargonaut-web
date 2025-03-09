@@ -17,6 +17,7 @@ import { toast } from "@/hooks/use-toast";
 import { User } from "@/types/user";
 
 import UserProfileCompact from "../user/UserProfileCompact";
+import {tripApi} from "@/services/tripApi";
 
 interface RideStatusProps {
   // rideId: string;
@@ -266,14 +267,29 @@ export default function RideStatus({
         setStatus("in_progress");
         break;
       case "Fahrt beenden":
-        setStatus("completed");
-        setIsSharing(false);
-        onRideCompleteAction(rideId.toString());
-        toast({
-          title: "Fahrt beendet",
-          description: "Die Fahrt wurde erfolgreich beendet.",
-        });
+        // Rufe die Mutation zum Aktualisieren des Trip‑Status auf
+        tripApi.updateTripStatus(rideId.toString(), "COMPLETED")
+            .then((updatedTrip) => {
+              // Optional: Aktualisiere den lokalen Zustand
+              setStatus("completed");
+              setIsSharing(false);
+              onRideCompleteAction(rideId.toString());
+              toast({
+                title: "Fahrt beendet",
+                description: "Die Fahrt wurde erfolgreich beendet.",
+              });
+            })
+            .catch((error) => {
+              console.error("Fehler beim Beenden der Fahrt:", error);
+              toast({
+                title: "Fehler",
+                description: error instanceof Error ? error.message : "Unbekannter Fehler",
+                variant: "destructive",
+              });
+            });
         break;
+
+
       case "Zwischenstopp":
       case "Zwischenstopp anfragen":
         console.log("Zwischenstopp wird gehandhabt");

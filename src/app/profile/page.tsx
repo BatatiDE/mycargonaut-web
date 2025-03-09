@@ -1,130 +1,55 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProfileForm from "@/components/forms/ProfileForm";
 import RideHistory from "@/components/trips/RideHistory";
 import RideStatus from "@/components/trips/RideStatus";
 import AuthGuard from "@/components/shared/AuthGuard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { tripApi } from "@/services/tripApi";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Profile() {
-    const [activeRides, setActiveRides] = useState([
-        {
-            id: 1,
-            from: "Berlin",
-            to: "München",
-            date: "2023-06-15",
-            status: "Upcoming",
-            type: "ride" as const,
-            isOffered: true,
-            driver: {
-                id: 123,
-                firstName: "John",
-                lastName: "Doe",
-                picture: "/placeholder.svg",
-                rating: 4.5,
-                numRides: 50,
-                numPassengers: 120,
-                weightCarried: 300,
-                distanceTraveled: 5000,
-                languages: ["Deutsch", "Englisch"],
-                isSmoker: false,
-                hasRated: false,
-                isRated: false,
-                email: "john.doe@example.com",
-                phone: "123456789",
-                birthdate: "1985-05-15",
-                additionalNote: "Pünktlich und zuverlässig",
-                ratings: {},
-            },
-            passengers: [
-                {
-                    id: 2,
-                    name: "Anna Müller",
-                    picture: "/placeholder.svg",
-                    rating: 4.2,
-                    numRides: 15,
-                    hasRated: false,
-                    isRated: false,
-                },
-                {
-                    id: 3,
-                    name: "Max Schmidt",
-                    picture: "/placeholder.svg",
-                    rating: 4.7,
-                    numRides: 30,
-                    hasRated: false,
-                    isRated: false,
-                },
-            ],
-        },
-        {
-            id: 3,
-            from: "Stuttgart",
-            to: "Nürnberg",
-            date: "2023-06-22",
-            status: "Upcoming",
-            type: "ride" as const,
-            isOffered: true,
-            driver: {
-                id: 124,
-                firstName: "Lisa",
-                lastName: "Weber",
-                picture: "/placeholder.svg",
-                rating: 4.8,
-                numRides: 75,
-                numPassengers: 200,
-                weightCarried: 500,
-                distanceTraveled: 8000,
-                languages: ["Deutsch", "Französisch"],
-                isSmoker: false,
-                hasRated: false,
-                isRated: false,
-                email: "lisa.weber@example.com",
-                phone: "987654321",
-                birthdate: "1990-08-20",
-                additionalNote: "Langjährige Erfahrung",
-                ratings: {},
-            },
-            passengers: [],
-        },
-    ]);
+    const { user } = useAuth();
+    const [activeRides, setActiveRides] = useState<any[]>([]);
+    const [completedRides, setCompletedRides] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const [completedRides, setCompletedRides] = useState([
-        {
-            id: 8,
-            from: "Köln",
-            to: "Dresden",
-            date: "2023-06-10",
-            type: "ride" as const,
-            driver: {
-                id: 121,
-                firstName: "Michael",
-                lastName: "Fischer",
-                picture: "/placeholder.svg",
-                rating: 4.6,
-                numRides: 90,
-                numPassengers: 150,
-                weightCarried: 400,
-                distanceTraveled: 7000,
-                languages: ["Deutsch", "Spanisch"],
-                isSmoker: true,
-                hasRated: false,
-                isRated: false,
-                email: "michael.fischer@example.com",
-                phone: "1122334455",
-                birthdate: "1980-12-12",
-                additionalNote: "Sehr freundlich",
-                ratings: {},
-            },
-            passengers: [],
-            isOffered: true,
-            isRated: false,
-            ratings: {},
-        },
-    ]);
+    useEffect(() => {
+        if (user && user.id) {
+            tripApi
+                .getTrips()
+                .then((trips) => {
+                    // Filtert nur die Fahrten, an denen der aktuelle User beteiligt ist:
+                    // entweder als Fahrer oder als gebuchter Mitfahrer.
+                    // Im Filter und in der Übergabe an RideStatus:
+                    const userIdStr = String(user!.id);
+
+                    const userRides = trips.filter((trip: any) =>
+                        trip.driverId === userIdStr ||
+                        (trip.bookedUsers &&
+                            trip.bookedUsers.some(
+                                (booking: any) => booking.userId === userIdStr
+                            ))
+                    );
+
+
+
+                    // Aufteilen in aktive Fahrten (nicht abgeschlossen) und Fahrtenhistorie (abgeschlossen)
+                    setActiveRides(userRides.filter((trip: any) => trip.status !== "COMPLETED"));
+                    setCompletedRides(userRides.filter((trip: any) => trip.status === "COMPLETED"));
+                })
+                .catch((err) => {
+                    console.error("Fehler beim Laden der Fahrten", err);
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+        }
+    }, [user]);
+
+    if (loading) return <div>Lädt...</div>;
 
     return (
         <AuthGuard>
@@ -147,18 +72,27 @@ export default function Profile() {
                                             <RideStatus
                                                 key={ride.id}
                                                 rideId={ride.id}
-                                                isOffered={ride.isOffered}
-                                                type={ride.type}
-                                                from={ride.from}
-                                                to={ride.to}
-                                                driver={ride.driver}
-                                                onRideCompleteAction={(rideId) => console.log(`Fahrt ${rideId} beendet`)} // ✅ Funktion hinzufügen
+                                                isOffered={ride.driverId === String(user!.id)}
+                                                type={ride.type === "OFFER" ? "ride" : "ride"}
+                                                from={ride.startingPoint}
+                                                to={ride.destinationPoint}
+                                                driver={ride.driver || {
+                                                    id: ride.driverId,
+                                                    firstName: "Unbekannt",
+                                                    lastName: "",
+                                                    picture: "/placeholder.svg",
+                                                    rating: 0,
+                                                    numRides: 0,
+                                                }}
+                                                passengers={ride.bookedUsers || []}
+                                                onRideCompleteAction={(rideId) => console.log(`Fahrt ${rideId} beendet`)}
                                             />
+
                                         ))}
                                     </div>
                                 </TabsContent>
                                 <TabsContent value="history">
-                                    <RideHistory rides={completedRides} currentUserId={123} />
+                                    <RideHistory rides={completedRides} currentUserId={user!.id} />
                                 </TabsContent>
                             </Tabs>
                         </CardContent>
