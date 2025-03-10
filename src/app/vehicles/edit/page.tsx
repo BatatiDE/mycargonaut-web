@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { vehicleSchema } from "@/utils/vehicleValidation";
-import { getVehicleById, updateVehicle } from "@/services/vehiclesApi";
+import { getVehicleById, updateVehicle } from "@/services/vehicleService";
 import { z } from "zod";
 
 export default function EditVehiclePage() {

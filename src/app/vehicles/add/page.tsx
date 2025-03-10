@@ -1,7 +1,7 @@
 "use client";
 
 import {useEffect, useState} from "react";
-import {getVehicles, deleteVehicle, addVehicle} from "@/services/vehiclesApi";
+import {getVehicles, deleteVehicle, addVehicle} from "@/services/vehicleService";
 import {useRouter} from "next/navigation";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
