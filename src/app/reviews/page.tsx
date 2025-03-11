@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 
 import { getErrorMessage } from "@/utils/errorHandler";
+
 export default function SearchPage() {
   const [results, setResults] = useState([]);
   const [error, setError] = useState<string | null>(null);

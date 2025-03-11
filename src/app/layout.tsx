@@ -2,9 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { Suspense } from "react";
 
-import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
+import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { AuthProvider } from "@/context/AuthContext";
 

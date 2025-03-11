@@ -24,8 +24,8 @@ async function graphQLFetch(query: string, variables?: Record<string, any>) {
   if (!response.ok) {
     const errorBody = await response.text();
     console.error(
-        `GraphQL request failed: ${response.status} ${response.statusText}`,
-        errorBody
+      `GraphQL request failed: ${response.status} ${response.statusText}`,
+      errorBody
     );
     throw new Error(`Error: ${response.status}`);
   }
@@ -112,7 +112,10 @@ export const tripApi = {
     };
 
     try {
-      console.log("Sending GraphQL variables:", JSON.stringify(variables, null, 2));
+      console.log(
+        "Sending GraphQL variables:",
+        JSON.stringify(variables, null, 2)
+      );
       const data = await graphQLFetch(query, variables);
       console.log("GraphQL response:", JSON.stringify(data, null, 2));
       return data.addTrip;
