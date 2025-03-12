@@ -16,9 +16,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { tripApi } from "@/services/tripApi";
 import { SearchCriteria, SearchProps } from "@/types/searchProps";
 import { Trip } from "@/types/trip";
-import { tripApi } from "@/services/tripApi";
 
 export default function Search({ action }: SearchProps) {
   const [startingPoint, setStartingPoint] = useState("");

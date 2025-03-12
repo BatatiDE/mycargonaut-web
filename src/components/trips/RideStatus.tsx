@@ -14,10 +14,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
+import { tripApi } from "@/services/tripApi";
 import { User } from "@/types/user";
 
 import UserProfileCompact from "../user/UserProfileCompact";
-import {tripApi} from "@/services/tripApi";
 
 interface RideStatusProps {
   rideId: number;
@@ -266,26 +266,27 @@ export default function RideStatus({
         setStatus("in_progress");
         break;
       case "Fahrt beenden":
-        tripApi.updateTripStatus(rideId.toString(), "COMPLETED")
-            .then((updatedTrip) => {
-              setStatus("completed");
-              setIsSharing(false);
-              onRideCompleteAction(rideId.toString());
-              toast({
-                title: "Fahrt beendet",
-                description: "Die Fahrt wurde erfolgreich beendet.",
-              });
-            })
-            .catch((error) => {
-              console.error("Fehler beim Beenden der Fahrt:", error);
-              toast({
-                title: "Fehler",
-                description: error instanceof Error ? error.message : "Unbekannter Fehler",
-                variant: "destructive",
-              });
+        tripApi
+          .updateTripStatus(rideId.toString(), "COMPLETED")
+          .then((updatedTrip) => {
+            setStatus("completed");
+            setIsSharing(false);
+            onRideCompleteAction(rideId.toString());
+            toast({
+              title: "Fahrt beendet",
+              description: "Die Fahrt wurde erfolgreich beendet.",
             });
+          })
+          .catch((error) => {
+            console.error("Fehler beim Beenden der Fahrt:", error);
+            toast({
+              title: "Fehler",
+              description:
+                error instanceof Error ? error.message : "Unbekannter Fehler",
+              variant: "destructive",
+            });
+          });
         break;
-
 
       case "Zwischenstopp":
       case "Zwischenstopp anfragen":

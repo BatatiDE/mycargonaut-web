@@ -1,7 +1,3 @@
-
-
-
-
 # **MyCargonaut Web Application**
 
 This is the **web application** codebase for **MyCargonaut**, a ride-sharing and freight-sharing platform that allows users to connect for transportation services. Built with **Next.js**, this app delivers a responsive and efficient experience for desktop and mobile web browsers.
@@ -9,6 +5,7 @@ This is the **web application** codebase for **MyCargonaut**, a ride-sharing and
 ---
 
 ## **Table of Contents**
+
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Installation](#installation)
@@ -21,6 +18,7 @@ This is the **web application** codebase for **MyCargonaut**, a ride-sharing and
 ---
 
 ## **Features**
+
 - User authentication (Login/Register) using JWT.
 - Create, edit, and manage offers and requests.
 - Search functionality with route filters and date range.
@@ -31,6 +29,7 @@ This is the **web application** codebase for **MyCargonaut**, a ride-sharing and
 ---
 
 ## **Tech Stack**
+
 - **Framework**: [Next.js](https://nextjs.org/)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 - **State Management**: Context API / Redux (if applicable)
@@ -42,12 +41,14 @@ This is the **web application** codebase for **MyCargonaut**, a ride-sharing and
 ## **Installation**
 
 1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/BatatiDE/mycargonaut-web.git
    cd mycargonaut-web
    ```
 
 2. **Install dependencies**:
+
    ```bash
    npm install
    ```
@@ -60,6 +61,7 @@ This is the **web application** codebase for **MyCargonaut**, a ride-sharing and
 ## **Running Locally**
 
 1. **Start the development server**:
+
    ```bash
    npm run dev
    ```
@@ -89,18 +91,18 @@ This is the **web application** codebase for **MyCargonaut**, a ride-sharing and
 ---
 
 ## **Environment Variables**
+
 The web app requires the following environment variables:
 
-| Variable                | Description                                  |
-|-------------------------|----------------------------------------------|
-| `NEXT_PUBLIC_API_URL`   | Base URL for the backend API                |
+| Variable                  | Description                                  |
+| ------------------------- | -------------------------------------------- |
+| `NEXT_PUBLIC_API_URL`     | Base URL for the backend API                 |
 | `NEXT_PUBLIC_MAP_API_KEY` | API key for map services (Google Maps, etc.) |
-
-
 
 ---
 
 ## **Contributing**
+
 Contributions are welcome! Please follow these steps:
 
 1. Fork the repository.
@@ -121,7 +123,5 @@ Contributions are welcome! Please follow these steps:
 ---
 
 ## **License**
+
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-
-

@@ -4,14 +4,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import BookingConfirmationModal from "@/components/modals/BookingConfirmModal";
-import OwnTripWarningModal from "@/components/modals/OwnTripWarningModal";
 import BookingSuccessModal from "@/components/modals/BookingSuccessModal";
+import OwnTripWarningModal from "@/components/modals/OwnTripWarningModal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
-import type { Trip } from "@/types/trip";
+import { useToast } from "@/hooks/use-toast";
 import { tripApi } from "@/services/tripApi";
+import type { Trip } from "@/types/trip";
 
 import UserProfileCompact from "../user/UserProfileCompact";
 
@@ -48,22 +48,22 @@ export default function OfferList({ type, searchCriteria }: OfferListProps) {
         const filteredTrips = allTrips.filter((trip) => {
           const tripDate = new Date(trip.date);
           const matchesType =
-              type === "offers" ? trip.type === "OFFER" : trip.type === "REQUEST";
+            type === "offers" ? trip.type === "OFFER" : trip.type === "REQUEST";
           return (
-              matchesType &&
-              (!searchCriteria.startingPoint ||
-                  trip.startingPoint
-                      .toLowerCase()
-                      .includes(searchCriteria.startingPoint.toLowerCase())) &&
-              (!searchCriteria.destinationPoint ||
-                  trip.destinationPoint
-                      .toLowerCase()
-                      .includes(searchCriteria.destinationPoint.toLowerCase())) &&
-              (!searchCriteria.date ||
-                  tripDate.toDateString() === searchCriteria.date.toDateString()) &&
-              trip.availableSeats >= searchCriteria.passengerSeats &&
-              trip.freightSpace >= searchCriteria.freightSpace &&
-              (!searchCriteria.isFreightOnly || trip.isFreightRide)
+            matchesType &&
+            (!searchCriteria.startingPoint ||
+              trip.startingPoint
+                .toLowerCase()
+                .includes(searchCriteria.startingPoint.toLowerCase())) &&
+            (!searchCriteria.destinationPoint ||
+              trip.destinationPoint
+                .toLowerCase()
+                .includes(searchCriteria.destinationPoint.toLowerCase())) &&
+            (!searchCriteria.date ||
+              tripDate.toDateString() === searchCriteria.date.toDateString()) &&
+            trip.availableSeats >= searchCriteria.passengerSeats &&
+            trip.freightSpace >= searchCriteria.freightSpace &&
+            (!searchCriteria.isFreightOnly || trip.isFreightRide)
           );
         });
         setTrips(filteredTrips);
@@ -83,11 +83,11 @@ export default function OfferList({ type, searchCriteria }: OfferListProps) {
     if (!user) return;
     const userIdStr = String(user.id);
     const tripDriverId =
-        trip.driverId !== undefined && trip.driverId !== null
-            ? String(trip.driverId)
-            : trip.driver
-                ? String(trip.driver.id)
-                : null;
+      trip.driverId !== undefined && trip.driverId !== null
+        ? String(trip.driverId)
+        : trip.driver
+          ? String(trip.driver.id)
+          : null;
 
     console.log("User ID:", userIdStr);
     console.log("Trip Driver ID:", tripDriverId);
@@ -126,9 +126,9 @@ export default function OfferList({ type, searchCriteria }: OfferListProps) {
       toast({
         title: "Fehler",
         description:
-            error instanceof Error
-                ? error.message
-                : "Es gab ein Problem bei der Buchung. Bitte versuchen Sie es später erneut.",
+          error instanceof Error
+            ? error.message
+            : "Es gab ein Problem bei der Buchung. Bitte versuchen Sie es später erneut.",
         variant: "destructive",
       });
     }
@@ -143,88 +143,91 @@ export default function OfferList({ type, searchCriteria }: OfferListProps) {
   if (error) return <div>Fehler: {error}</div>;
 
   return (
-      <div className="space-y-4">
-        {trips.length === 0 ? (
-            <p>Keine {type === "offers" ? "Angebote" : "Anfragen"} gefunden.</p>
-        ) : (
-            trips.map((trip) => (
-                <Card key={trip.id}>
-                  <CardHeader>
-                    <CardTitle>
-                      {trip.startingPoint} nach {trip.destinationPoint}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="mb-4 flex items-start justify-between">
-                      <div>
-                        <p>
-                          <strong>Datum:</strong>{" "}
-                          {new Date(trip.date).toLocaleDateString()}
-                        </p>
-                        <p>
-                          <strong>Zeit:</strong> {trip.time}
-                        </p>
-                        <p>
-                          <strong>
-                            {type === "offers" ? "Verfügbare Plätze" : "Benötigte Plätze"}:
-                          </strong>{" "}
-                          {trip.availableSeats}
-                        </p>
-                        <p>
-                          <strong>Frachtplatz:</strong> {trip.freightSpace} m³
-                        </p>
-                        <p>
-                          <strong>
-                            {type === "offers" ? "Preis" : "Maximaler Preis"}:
-                          </strong>{" "}
-                          €{trip.price}
-                        </p>
-                        {trip.isFreightRide && (
-                            <p>
-                              <strong>Nur Fracht</strong>
-                            </p>
-                        )}
-                      </div>
-                      {trip.driver ? (
-                          <UserProfileCompact user={trip.driver} />
-                      ) : (
-                          <p>Keine Fahrerinformationen verfügbar</p>
-                      )}
-                    </div>
-                    <Button onClick={() => handleAction(trip)} className="w-full">
-                      {type === "offers" ? "Jetzt buchen" : "Anfrage annehmen"}
-                    </Button>
-                  </CardContent>
-                </Card>
-            ))
-        )}
+    <div className="space-y-4">
+      {trips.length === 0 ? (
+        <p>Keine {type === "offers" ? "Angebote" : "Anfragen"} gefunden.</p>
+      ) : (
+        trips.map((trip) => (
+          <Card key={trip.id}>
+            <CardHeader>
+              <CardTitle>
+                {trip.startingPoint} nach {trip.destinationPoint}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-4 flex items-start justify-between">
+                <div>
+                  <p>
+                    <strong>Datum:</strong>{" "}
+                    {new Date(trip.date).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <strong>Zeit:</strong> {trip.time}
+                  </p>
+                  <p>
+                    <strong>
+                      {type === "offers"
+                        ? "Verfügbare Plätze"
+                        : "Benötigte Plätze"}
+                      :
+                    </strong>{" "}
+                    {trip.availableSeats}
+                  </p>
+                  <p>
+                    <strong>Frachtplatz:</strong> {trip.freightSpace} m³
+                  </p>
+                  <p>
+                    <strong>
+                      {type === "offers" ? "Preis" : "Maximaler Preis"}:
+                    </strong>{" "}
+                    €{trip.price}
+                  </p>
+                  {trip.isFreightRide && (
+                    <p>
+                      <strong>Nur Fracht</strong>
+                    </p>
+                  )}
+                </div>
+                {trip.driver ? (
+                  <UserProfileCompact user={trip.driver} />
+                ) : (
+                  <p>Keine Fahrerinformationen verfügbar</p>
+                )}
+              </div>
+              <Button onClick={() => handleAction(trip)} className="w-full">
+                {type === "offers" ? "Jetzt buchen" : "Anfrage annehmen"}
+              </Button>
+            </CardContent>
+          </Card>
+        ))
+      )}
 
-        {/* Buchungsbestätigungsmodal */}
-        {selectedTrip && isBookingModalOpen && (
-            <BookingConfirmationModal
-                isOpen={isBookingModalOpen}
-                onClose={() => setIsBookingModalOpen(false)}
-                onConfirm={handleConfirmBooking}
-                trip={selectedTrip}
-            />
-        )}
+      {/* Buchungsbestätigungsmodal */}
+      {selectedTrip && isBookingModalOpen && (
+        <BookingConfirmationModal
+          isOpen={isBookingModalOpen}
+          onClose={() => setIsBookingModalOpen(false)}
+          onConfirm={handleConfirmBooking}
+          trip={selectedTrip}
+        />
+      )}
 
-        {/* Eigene Fahrt Warnmodal */}
-        {selectedTrip && isOwnTripModalOpen && (
-            <OwnTripWarningModal
-                isOpen={isOwnTripModalOpen}
-                onClose={() => setIsOwnTripModalOpen(false)}
-            />
-        )}
+      {/* Eigene Fahrt Warnmodal */}
+      {selectedTrip && isOwnTripModalOpen && (
+        <OwnTripWarningModal
+          isOpen={isOwnTripModalOpen}
+          onClose={() => setIsOwnTripModalOpen(false)}
+        />
+      )}
 
-        {/* Erfolgsmeldungsmodal */}
-        {selectedTrip && isSuccessModalOpen && (
-            <BookingSuccessModal
-                isOpen={isSuccessModalOpen}
-                duration={5}
-                onComplete={handleSuccessComplete}
-            />
-        )}
-      </div>
+      {/* Erfolgsmeldungsmodal */}
+      {selectedTrip && isSuccessModalOpen && (
+        <BookingSuccessModal
+          isOpen={isSuccessModalOpen}
+          duration={5}
+          onComplete={handleSuccessComplete}
+        />
+      )}
+    </div>
   );
 }

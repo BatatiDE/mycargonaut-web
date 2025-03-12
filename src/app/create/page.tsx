@@ -47,7 +47,7 @@ export default function Create() {
           <h2 className="mb-4 text-xl font-semibold">Kartenübersicht</h2>
           <div className="h-[600px] overflow-hidden rounded-lg bg-gray-100">
             <Map
-                onLocationSelectAction={handleLocationSelect}
+              onLocationSelectAction={handleLocationSelect}
               fromLocation={fromLocation}
               toLocation={toLocation}
             />
